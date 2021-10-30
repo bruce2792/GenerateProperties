@@ -39,6 +39,7 @@ namespace GenerateProperties
             this.btGenerateSingleDB = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.btGenerateAllDB = new System.Windows.Forms.Button();
+            this.listBox1 = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // label1
@@ -137,11 +138,21 @@ namespace GenerateProperties
             this.btGenerateAllDB.UseVisualStyleBackColor = true;
             this.btGenerateAllDB.Click += new System.EventHandler(this.btGenerateAllDB_Click);
             // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.ItemHeight = 12;
+            this.listBox1.Location = new System.Drawing.Point(849, 55);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(256, 280);
+            this.listBox1.TabIndex = 9;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 589);
+            this.ClientSize = new System.Drawing.Size(1151, 589);
+            this.Controls.Add(this.listBox1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.btGenerateAllDB);
             this.Controls.Add(this.btGenerateSingleDB);
@@ -173,6 +184,7 @@ namespace GenerateProperties
         private System.Windows.Forms.Button btGenerateSingleDB;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btGenerateAllDB;
+        private System.Windows.Forms.ListBox listBox1;
     }
 }
 

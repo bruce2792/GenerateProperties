@@ -21,6 +21,9 @@ namespace GenerateProperties
     public partial class Form1 : Form
     {
         public static Logger logger = LogManager.GetLogger("*");
+        private static bool isGeneralSingleDB = false;
+       
+
         public Form1()
         {
             InitializeComponent();
@@ -31,18 +34,37 @@ namespace GenerateProperties
             #region 读取有哪些数据库
             var getAllDatabaseSql = "SELECT NAME FROM MASTER..SYSDATABASES";
             var dbList = DbHelper.ExecSqlDataReader<string>(getAllDatabaseSql);
-            ArrayList mylist = new ArrayList();
-            for (int i = 0; i < dbList.Count; i++)
-            {
-                mylist.Add(new DictionaryEntry(i, dbList[i]));
-            }
 
-            comboBox1.DataSource = mylist;
-            comboBox1.DisplayMember = "Value";
-            comboBox1.ValueMember = "Key";
+
+
+            SetCombox(dbList, this.comboBox1);
+
+
+
             #endregion
 
 
+            //Task.Factory.StartNew(() =>
+            //{
+            //    while (true)
+            //    {
+            //        var cnt = ParallelLoopStates.Where(a => !a.IsStopped).Count();
+            //        logger.Info("fit" + cnt);
+            //        while (cnt > 0)
+            //        {
+            //            logger.Info("second" + cnt);
+            //            this.listBox1.Items.Clear();
+            //            var notStopedLoopItems = ParallelLoopStates.Where(a => a.IsStopped == false);
+            //            foreach (var item in notStopedLoopItems)
+            //            {
+            //                this.listBox1.Items.Add(item.IsStopped.ToString());
+            //            }
+
+
+            //        }
+            //    }
+
+            //});
 
 
 
@@ -66,15 +88,33 @@ namespace GenerateProperties
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             //获取表列表
-            GetTableList();
+            var tableList = GetTableList();
+
+            SetCombox(tableList, this.comboBox2);
         }
 
-        private void GetTableList()
+        private void SetCombox(List<string> source, ComboBox comboBox)
+        {
+            if (source != null && source.HasAny())
+            {
+                ArrayList mylist = new ArrayList();
+                for (int i = 0; i < source.Count; i++)
+                {
+                    mylist.Add(new DictionaryEntry(i, source[i]));
+                }
+
+                comboBox.DataSource = mylist;
+                comboBox.DisplayMember = "Value";
+                comboBox.ValueMember = "Key";
+            }
+        }
+
+        private List<string> GetTableList()
         {
             //第一种方法获取值
             string db = this.comboBox1.Text;
             string combobox1_index = this.comboBox1.SelectedIndex.ToString();
-
+            var tableList = new List<string>();
             if (db != "System.Collections.DictionaryEntry")
             {
                 //logger.Info("combobox1_value===" + combobox1_value);
@@ -82,19 +122,11 @@ namespace GenerateProperties
 
                 #region 读取有哪些表
                 var getAllTableSql = "SELECT NAME FROM SYSOBJECTS WHERE TYPE='U'  --读取所有表";
-                var tableList = DbHelper.ExecSqlDataReader<string>(getAllTableSql, db);
-                ArrayList mylist = new ArrayList();
-                for (int i = 0; i < tableList.Count; i++)
-                {
-                    mylist.Add(new DictionaryEntry(i, tableList[i]));
-                }
+                tableList = DbHelper.ExecSqlDataReader<string>(getAllTableSql, db);
 
-                comboBox2.DataSource = mylist;
-                comboBox2.DisplayMember = "Value";
-                comboBox2.ValueMember = "Key";
                 #endregion
             }
-
+            return tableList;
 
 
             #region 获取combobox的选中项
@@ -117,10 +149,10 @@ namespace GenerateProperties
         /// <summary>
         /// 获取数据库表中的字段
         /// </summary>
-        private void GetTableField(string db, string table)
+        private string GetTableField(string db, string table)
         {
 
-
+            var properties = string.Empty;
 
             if (table != "System.Collections.DictionaryEntry")
             {
@@ -143,7 +175,7 @@ Where
 SCOL.ID=OBJECT_ID('{table}')
 AND STYPE.NAME<>'SYSNAME'";
                 var fieldList = DbHelper.ExecSqlDataReader<TableField>(getAllFieldSql, db);
-                var properties = string.Empty;
+
 
                 properties += $"using System\r\n";
                 properties += $"using System.Collections.Generic;\r\n";
@@ -177,13 +209,9 @@ AND STYPE.NAME<>'SYSNAME'";
                 properties += "}";
 
 
-                if (properties.IsNotNullOrEmpty())
-                {
-                    this.textBox1.Text = properties;
-                    //加入到粘贴板
-                    Clipboard.SetDataObject(properties);
-                    GenerateFile();
-                }
+
+
+
                 #region 验证是否获取成功
                 //if (fieldList.HasAny())
                 //{
@@ -211,6 +239,7 @@ AND STYPE.NAME<>'SYSNAME'";
 
                 #endregion
             }
+            return properties;
         }
 
         //创建属性
@@ -223,7 +252,17 @@ AND STYPE.NAME<>'SYSNAME'";
             string table = this.comboBox2.Text;
             //string combobox2_index = this.comboBox2.SelectedIndex.ToString();
 
-            GetTableField(db, table);
+            var properties = GetTableField(db, table);
+            if (properties.IsNotNullOrEmpty())
+            {
+                this.textBox1.Text = properties;
+                //加入到粘贴板
+                Clipboard.SetDataObject(properties);
+
+                //创建文件
+                GenerateFile(db, table, properties);
+            }
+
         }
 
         /// <summary>
@@ -261,19 +300,8 @@ AND STYPE.NAME<>'SYSNAME'";
         {
             GetTableList();
         }
-        /// <summary>
-        /// 生成单个数据库所有表的实体模型
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnGenerateSingleDB_Click(object sender, EventArgs e)
-        {
-            //生成库中所有的model .cs文件
 
 
-            GenerateFile();
-
-        }
 
         /// <summary>
         ///  生成单个数据库所有表的实体模型
@@ -288,11 +316,8 @@ AND STYPE.NAME<>'SYSNAME'";
 
 
 
-        private void GenerateFile()
+        private void GenerateFile(string db, string table, string content)
         {
-            //table
-            string db = this.comboBox1.Text;
-            string table = this.comboBox2.Text;
             if (db.IsNullOrEmpty() || table.IsNullOrEmpty() || textBox1.Text.IsNullOrEmpty())
                 return;
 
@@ -307,7 +332,7 @@ AND STYPE.NAME<>'SYSNAME'";
 
 
             var fileName = $@"{path}{table}.cs";
-            string text = this.textBox1.Text;
+            string text = content;
 
             FileStream fs = File.OpenWrite(fileName);
             //将字符串转换为字节数组
@@ -356,7 +381,7 @@ AND STYPE.NAME<>'SYSNAME'";
 
 
         /// <summary>
-        /// 获取最后一个盘符
+        /// 获取最后一个磁盘驱动器盘符
         /// </summary>
         /// <returns></returns>
         private string GetLastDriver()
@@ -365,6 +390,11 @@ AND STYPE.NAME<>'SYSNAME'";
             return list.Last();
         }
 
+
+        /// <summary>
+        /// 获取计算机上的全部磁盘驱动器盘符
+        /// </summary>
+        /// <returns></returns>
         private List<string> GetRemovableDeviceID()
         {
             List<string> deviceIDs = new List<string>();
@@ -430,6 +460,76 @@ AND STYPE.NAME<>'SYSNAME'";
             //logger.Warn(list);
             //MessageBox.Show(GetLastDriver());
 
+
+        }
+
+
+        #region 取得ComboBox中的Items属性的List
+        /// <summary>
+        /// 取得ComboBox中的Items属性的List
+        /// </summary>
+        /// <param name="cobName">ComboBox控件名称</param>
+        /// <returns>List</returns>
+        //public List<string> GetCbomboxItems(ComboBox cobName)
+        //{
+        //    /*两种方法都可以使用,如果数据量大时可能方法2效率更高一点，没有实际测试过，只是个人见解，因为方法1是循环，方法2直接是复制，所以我认为方法2效率更高点，数据量小的话就不要计较了*/
+        //    //==============方法1=============================
+        //    List<string> tmpItemsList = new List<string>();
+        //    for (int i = 0; i <= cobName.Items.Count - 1; i++)
+        //    {
+        //        //tmpItemsList.Add(cobName.Items[i].ToString
+        //        //this.comboBox1.GetItemText(cobName.Items[i]);
+        //        tmpItemsList.Add(this.comboBox1.GetItemText(cobName.Items[i]));
+        //    }
+        //    /*//==============方法2===========================
+        //    string[] aa = new string[cobName.Items.Count];
+        //    cobName.Items.CopyTo(aa, 0);
+        //    List<string> tmpItemsList = new List<string>(aa);
+        //    */
+        //    return tmpItemsList;
+        //}
+        #endregion
+
+       // static List<ParallelLoopState> ParallelLoopStates = new List<ParallelLoopState>();
+        /// <summary>
+        /// 生成单个数据库所有表的实体模型
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnGenerateSingleDB_Click(object sender, EventArgs e)
+        {
+            // ParallelLoopStates = new List<ParallelLoopState>();
+            Task.Factory.StartNew(() =>
+            {
+               //isGeneralSingleDB = true;
+                //生成库中所有的model .cs文件
+
+                //table
+                string db = this.comboBox1.Text;
+                //  string table = this.comboBox2.Text;
+
+                //获取表列表
+                var tableList = GetTableList();
+
+                Parallel.ForEach(tableList, (table, ParallelLoopState) =>
+                {
+                    //  ParallelLoopStates.Add(ParallelLoopState);
+                    var properties = GetTableField(db, table);
+                    GenerateFile(db, table, properties);
+                });
+
+
+
+            });
+
+
+
+            //if (!isGeneralSingleDB)
+            //{
+            //    logger.Info("进入btnGenerateSingleDB_Click执行...");
+
+            //}
+            //logger.Info("跳出btnGenerateSingleDB_Click...");
 
         }
 
