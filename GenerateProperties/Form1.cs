@@ -188,7 +188,7 @@ AND STYPE.NAME<>'SYSNAME'";
                 var fieldList = DbHelper.ExecSqlDataReader<TableField>(getAllFieldSql, db);
 
 
-                properties += $"using System\r\n";
+                properties += $"using System;\r\n";
                 properties += $"using System.Collections.Generic;\r\n";
                 properties += $"using System.Linq;\r\n";
                 properties += $"using System.Text;\r\n";
