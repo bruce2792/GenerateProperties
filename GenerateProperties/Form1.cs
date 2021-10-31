@@ -22,28 +22,33 @@ namespace GenerateProperties
     {
         public static Logger logger = LogManager.GetLogger("*");
         private static bool isGeneralSingleDB = false;
-       
+
 
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private List<string> GetDatabases()
         {
             #region 读取有哪些数据库
             var getAllDatabaseSql = "SELECT NAME FROM MASTER..SYSDATABASES";
             var dbList = DbHelper.ExecSqlDataReader<string>(getAllDatabaseSql);
 
+            return dbList;
 
 
-            SetCombox(dbList, this.comboBox1);
 
 
 
             #endregion
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
 
-
+            var dbList = GetDatabases();
+            if (dbList.HasAny())
+                SetCombox(dbList, this.comboBox1);
             //Task.Factory.StartNew(() =>
             //{
             //    while (true)
@@ -87,8 +92,9 @@ namespace GenerateProperties
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string db = this.comboBox1.Text;
             //获取表列表
-            var tableList = GetTableList();
+            var tableList = GetTableList(db);
 
             SetCombox(tableList, this.comboBox2);
         }
@@ -109,10 +115,9 @@ namespace GenerateProperties
             }
         }
 
-        private List<string> GetTableList()
+        private List<string> GetTableList(string db)
         {
             //第一种方法获取值
-            string db = this.comboBox1.Text;
             string combobox1_index = this.comboBox1.SelectedIndex.ToString();
             var tableList = new List<string>();
             if (db != "System.Collections.DictionaryEntry")
@@ -298,7 +303,8 @@ AND STYPE.NAME<>'SYSNAME'";
 
         private void btnReload_Click(object sender, EventArgs e)
         {
-            GetTableList();
+            string db = this.comboBox1.Text;
+            GetTableList(db);
         }
 
 
@@ -311,6 +317,30 @@ AND STYPE.NAME<>'SYSNAME'";
         private void btGenerateAllDB_Click(object sender, EventArgs e)
         {
 
+
+
+            Task.Factory.StartNew(() =>
+            {
+                //isGeneralSingleDB = true;
+                //生成库中所有的model .cs文件
+
+                //db
+                var dbList = GetDatabases();
+                Parallel.ForEach(dbList, (db) =>
+                {
+                    //获取表列表
+                    var tableList = GetTableList(db);
+
+                    Parallel.ForEach(tableList, (table, ParallelLoopState) =>
+                    {
+                        //  ParallelLoopStates.Add(ParallelLoopState);
+                        var properties = GetTableField(db, table);
+                        GenerateFile(db, table, properties);
+                    });
+                });
+
+
+            });
         }
 
 
@@ -448,22 +478,6 @@ AND STYPE.NAME<>'SYSNAME'";
             return deviceIDs;
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            //var list = GetRemovableDeviceID();
-
-            //foreach (var item in list)
-            //{
-            //    logger.Warn(item);
-            //}
-            //logger.Warn("---");
-            //logger.Warn(list);
-            //MessageBox.Show(GetLastDriver());
-
-
-        }
-
-
         #region 取得ComboBox中的Items属性的List
         /// <summary>
         /// 取得ComboBox中的Items属性的List
@@ -490,7 +504,7 @@ AND STYPE.NAME<>'SYSNAME'";
         //}
         #endregion
 
-       // static List<ParallelLoopState> ParallelLoopStates = new List<ParallelLoopState>();
+        // static List<ParallelLoopState> ParallelLoopStates = new List<ParallelLoopState>();
         /// <summary>
         /// 生成单个数据库所有表的实体模型
         /// </summary>
@@ -501,15 +515,15 @@ AND STYPE.NAME<>'SYSNAME'";
             // ParallelLoopStates = new List<ParallelLoopState>();
             Task.Factory.StartNew(() =>
             {
-               //isGeneralSingleDB = true;
+                //isGeneralSingleDB = true;
                 //生成库中所有的model .cs文件
+
 
                 //table
                 string db = this.comboBox1.Text;
-                //  string table = this.comboBox2.Text;
 
                 //获取表列表
-                var tableList = GetTableList();
+                var tableList = GetTableList(db);
 
                 Parallel.ForEach(tableList, (table, ParallelLoopState) =>
                 {
