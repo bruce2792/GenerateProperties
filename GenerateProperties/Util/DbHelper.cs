@@ -86,6 +86,46 @@ namespace GenerateProperties.Util
 
         #region " ExecSqlNonQuerry "
 
+        public static bool InsertOne<T>(T model) where T : class
+        {
+            if (model == null)
+                return false;
+            StringBuilder sql1 = new StringBuilder();
+            StringBuilder sql2 = new StringBuilder();
+
+            if (!typeof(T).IsClass || typeof(T) == typeof(string))
+                return false;
+
+
+            //引用类型 class
+            Type type = typeof(T);
+            var tableName = type.Name;
+
+            sql1.Append($"insert into {tableName}(");
+
+            PropertyInfo[] properties = type.GetProperties();
+            var noMappingField = new List<string> { "ID", "ObjectID", "Tags", "CreationTime" };
+
+            foreach (var pi in properties)//遍历对象的属性
+            {
+                if (!noMappingField.Contains(pi.Name))
+                {
+                    sql1.Append($"{pi.Name},");
+                    if (!pi.PropertyType.Equals(typeof(string)) && !pi.PropertyType.Equals(typeof(DateTime)))
+                        sql2.Append($"{pi.GetValue(model)},");
+                    else
+                        sql2.Append($"'{pi.GetValue(model)}',");
+                }
+            }
+
+            var sql1Str = sql1.ToString();
+            var sql2Str = sql2.ToString();
+            var strSQL = $"{sql1Str.Substring(0, sql1Str.Length - 1)}) values({sql2Str.Substring(0, sql2Str.Length - 1)})";
+
+            return ExecSqlNonQuerry(strSQL) > 0 ? true : false;
+
+        }
+
         /// <summary>
         /// 执行非查询SQL语句
         /// </summary>
@@ -130,9 +170,9 @@ namespace GenerateProperties.Util
         /// </summary>
         /// <param name="strSQL">待执行SQL语句</param>
         /// <returns>执行结果的第1行第1列的值</returns>
-        public static object ExecSqlScalar(string strSQL)
+        public static T ExecSqlScalar<T>(string strSQL)
         {
-            return ExecSqlScalar(strSQL, null);
+            return ExecSqlScalar<T>(strSQL, null);
         }
 
         /// <summary>
@@ -141,9 +181,9 @@ namespace GenerateProperties.Util
         /// <param name="strSQL">待执行SQL语句</param>
         /// <param name="parameters">参数数组</param>
         /// <returns>执行结果的第1行第1列的值</returns>
-        public static object ExecSqlScalar(string strSQL, SqlParameter[] parameters)
+        public static T ExecSqlScalar<T>(string strSQL, SqlParameter[] parameters)
         {
-            return ExecSqlScalar(strSQL, parameters, DefaultConnString);
+            return ExecSqlScalar<T>(strSQL, parameters, DefaultConnString);
         }
 
         /// <summary>
@@ -152,7 +192,7 @@ namespace GenerateProperties.Util
         /// <param name="strSQL">待执行SQL语句</param>
         /// <param name="parameters">参数数组</param>
         /// <returns>执行结果的第1行第1列的值</returns>
-        public static object ExecSqlScalar(string strSQL, SqlParameter[] parameters, string connStr)
+        public static T ExecSqlScalar<T>(string strSQL, SqlParameter[] parameters, string connStr)
         {
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -160,7 +200,7 @@ namespace GenerateProperties.Util
                 SqlCommand cmd = GetSqlCommand(conn, strSQL, CommandType.Text, parameters);
                 object result = cmd.ExecuteScalar();
                 cmd.Dispose();
-                return result;
+                return (T)result;
             }
         }
 

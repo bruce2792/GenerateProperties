@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace GenerateProperties.Util
+namespace GenerateProperties
 {
     public static class ExtensionHelper
     {
@@ -61,6 +65,50 @@ namespace GenerateProperties.Util
         //        pi.SetValue(assemblyObj, value, null);//给泛型的属性赋值
         //    }
         //}
+
+
+        /// <summary>
+        /// 使用 lambda 表达式设置值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="target"></param>
+        /// <param name="memberLambda"></param>
+        /// <param name="value"></param>
+        public static void SetPropertyValue<T, TValue>(this T target, Expression<Func<T, TValue>> memberLambda, TValue value)
+        {
+            if (memberLambda.Body is MemberExpression memberSelectorExpression)
+            {
+                var property = memberSelectorExpression.Member as PropertyInfo;
+                if (property != null)
+                {
+                    property.SetValue(target, value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 使用 lambda 表达式设置值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="target"></param>
+        /// <param name="memberLambda"></param>
+        /// <param name="default">没有获取到值时的默认值</param>
+        public static TValue GetPropertyValue<T, TValue>(this T target, Expression<Func<T, TValue>> memberLambda, TValue @default)
+        {
+            if (memberLambda.Body is MemberExpression memberSelectorExpression)
+            {
+                var property = memberSelectorExpression.Member as PropertyInfo;
+                if (property != null)
+                {
+                    return (TValue)property.GetValue(target);
+                }
+            }
+            return @default;
+        }
+
+
 
 
 
