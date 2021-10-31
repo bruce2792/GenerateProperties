@@ -36,13 +36,19 @@ namespace GenerateProperties
             var dbList = DbHelper.ExecSqlDataReader<string>(getAllDatabaseSql);
 
             return dbList;
-
-
-
-
-
             #endregion
         }
+
+        private void btnReload_Click(object sender, EventArgs e)
+        {
+            string db = this.comboBox1.Text;
+            var tableList = GetTableList(db);
+            if (tableList.HasAny())
+                SetCombox(tableList, this.comboBox2);
+        }
+
+
+
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -118,7 +124,7 @@ namespace GenerateProperties
         private List<string> GetTableList(string db)
         {
             //第一种方法获取值
-            string combobox1_index = this.comboBox1.SelectedIndex.ToString();
+            //string combobox1_index = this.comboBox1.SelectedIndex.ToString();
             var tableList = new List<string>();
             if (db != "System.Collections.DictionaryEntry")
             {
@@ -197,18 +203,45 @@ AND STYPE.NAME<>'SYSNAME'";
 
                 foreach (var item in fieldList)
                 {
-                    if (item.FieldType == "varchar" || item.FieldType == "nvarchar" || item.FieldType == "text")
-                        properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public string {item.FieldName} {{get;set;}}\r\n\r\n";
-                    else if (item.FieldType == "uniqueidentifier")
-                        properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public Guid {item.FieldName} {{get;set;}}\r\n\r\n";
-                    else if (item.FieldType == "smallint")
-                        properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public short {item.FieldName} {{get;set;}}\r\n\r\n";
-                    else if (item.FieldType == "int ")
-                        properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public int {item.FieldName} {{get;set;}}\r\n\r\n";
-                    else if (item.FieldType == "decimal ")
-                        properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public decimal {item.FieldName} {{get;set;}}\r\n\r\n";
-                    if (item.FieldType == "datetime")
-                        properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public DateTime {item.FieldName} {{get;set;}}\r\n\r\n";
+                    switch (item.FieldType)
+                    {
+                        case "varchar":
+                            properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public string {item.FieldName} {{get;set;}}\r\n\r\n";
+                            break;
+                        case "nvarchar":
+                            properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public string {item.FieldName} {{get;set;}}\r\n\r\n";
+                            break;
+                        case "text":
+                            properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public string {item.FieldName} {{get;set;}}\r\n\r\n";
+                            break;
+                        case "uniqueidentifier":
+                            properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public Guid {item.FieldName} {{get;set;}}\r\n\r\n";
+                            break;
+                        case "smallint":
+                            properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public short {item.FieldName} {{get;set;}}\r\n\r\n";
+                            break;
+                        case "int":
+                            properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public int {item.FieldName} {{get;set;}}\r\n\r\n";
+                            break;
+                        case "decimal":
+                            properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public decimal {item.FieldName} {{get;set;}}\r\n\r\n";
+                            break;
+                        case "datetime":
+                            properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public DateTime {item.FieldName} {{get;set;}}\r\n\r\n";
+                            break;
+                    }
+                    //if (item.FieldType == "varchar" || item.FieldType == "nvarchar" || item.FieldType == "text")
+                    //    properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public string {item.FieldName} {{get;set;}}\r\n\r\n";
+                    //else if (item.FieldType == "uniqueidentifier")
+                    //    properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public Guid {item.FieldName} {{get;set;}}\r\n\r\n";
+                    //else if (item.FieldType == "smallint")
+                    //    properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public short {item.FieldName} {{get;set;}}\r\n\r\n";
+                    //else if (item.FieldType == "int")
+                    //    properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public int {item.FieldName} {{get;set;}}\r\n\r\n";
+                    //else if (item.FieldType == "decimal")
+                    //    properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public decimal {item.FieldName} {{get;set;}}\r\n\r\n";
+                    //else if (item.FieldType == "datetime")
+                    //    properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public DateTime {item.FieldName} {{get;set;}}\r\n\r\n";
                 }
                 properties += "    }\r\n";
                 properties += "}";
@@ -264,8 +297,12 @@ AND STYPE.NAME<>'SYSNAME'";
                 //加入到粘贴板
                 Clipboard.SetDataObject(properties);
 
+                var dbPath = GetDbPath(db);
+                if (Directory.Exists(dbPath) == false)
+                    Directory.CreateDirectory(dbPath);
+
                 //创建文件
-                GenerateFile(db, table, properties);
+                GenerateFile(db, table, dbPath, properties);
             }
 
         }
@@ -301,14 +338,6 @@ AND STYPE.NAME<>'SYSNAME'";
                 Clipboard.SetDataObject(textBox1.Text);
         }
 
-        private void btnReload_Click(object sender, EventArgs e)
-        {
-            string db = this.comboBox1.Text;
-            GetTableList(db);
-        }
-
-
-
         /// <summary>
         ///  生成单个数据库所有表的实体模型
         /// </summary>
@@ -330,12 +359,18 @@ AND STYPE.NAME<>'SYSNAME'";
                 {
                     //获取表列表
                     var tableList = GetTableList(db);
+                    //删除此db目录
+                    var dbPath = GetDbPath(db);
+                    if (Directory.Exists(dbPath))
+                        Directory.Delete(dbPath, true);
+                    else
+                        Directory.CreateDirectory(dbPath);
 
                     Parallel.ForEach(tableList, (table, ParallelLoopState) =>
                     {
                         //  ParallelLoopStates.Add(ParallelLoopState);
                         var properties = GetTableField(db, table);
-                        GenerateFile(db, table, properties);
+                        GenerateFile(db, table, dbPath, properties);
                     });
                 });
 
@@ -343,25 +378,30 @@ AND STYPE.NAME<>'SYSNAME'";
             });
         }
 
+        /// <summary>
+        /// 获取Database目录存放路径
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <returns></returns>
+        private string GetDbPath(string dbName)
+        {
+            //驱动器盘符列表
+            var driver = GetLastDriver();
+
+            string dbPath = $@"{driver}\GeneratePropertiesOutput\{dbName}\";
+
+            return dbPath;
+
+        }
 
 
-
-        private void GenerateFile(string db, string table, string content)
+        private void GenerateFile(string db, string table, string dbPath, string content)
         {
             if (db.IsNullOrEmpty() || table.IsNullOrEmpty() || textBox1.Text.IsNullOrEmpty())
                 return;
 
-            //驱动器盘符列表
-            var driver = GetLastDriver();
 
-            string path = $@"{driver}\GeneratePropertiesOutput\{db}\";
-            if (Directory.Exists(path) == false)
-            {
-                Directory.CreateDirectory(path);
-            }
-
-
-            var fileName = $@"{path}{table}.cs";
+            var fileName = $@"{dbPath}{table}.cs";
             string text = content;
 
             FileStream fs = File.OpenWrite(fileName);
@@ -513,14 +553,32 @@ AND STYPE.NAME<>'SYSNAME'";
         private void btnGenerateSingleDB_Click(object sender, EventArgs e)
         {
             // ParallelLoopStates = new List<ParallelLoopState>();
+
+            //table
+            string db = this.comboBox1.Text;
+
+            var dbPath = GetDbPath(db);
+
+
+            //删除此db目录
+            if (Directory.Exists(dbPath))
+                Directory.Delete(dbPath, true);
+            else
+                Directory.CreateDirectory(dbPath);
+            //DirectoryInfo root = new DirectoryInfo(path);
+            //FileInfo[] files = root.GetFiles();
+
             Task.Factory.StartNew(() =>
             {
                 //isGeneralSingleDB = true;
                 //生成库中所有的model .cs文件
 
+                //删除所有文件
+                //foreach (var item in files)
+                //{
+                //    File.Delete(item.FullName);
+                //}
 
-                //table
-                string db = this.comboBox1.Text;
 
                 //获取表列表
                 var tableList = GetTableList(db);
@@ -529,7 +587,7 @@ AND STYPE.NAME<>'SYSNAME'";
                 {
                     //  ParallelLoopStates.Add(ParallelLoopState);
                     var properties = GetTableField(db, table);
-                    GenerateFile(db, table, properties);
+                    GenerateFile(db, table, dbPath, properties);
                 });
 
 
