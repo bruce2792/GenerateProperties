@@ -404,12 +404,14 @@ AND STYPE.NAME<>'SYSNAME'";
             var fileName = $@"{dbPath}{table}.cs";
             string text = content;
 
-            FileStream fs = File.OpenWrite(fileName);
-            //将字符串转换为字节数组
-            Byte[] info = Encoding.Default.GetBytes(text);
-            //向文件流中写入文件
-            fs.Write(info, 0, info.Length);
-            fs.Close();   //关闭文件流
+            File.WriteAllText(fileName, text);
+
+            //FileStream fs = File.OpenWrite(fileName);
+            ////将字符串转换为字节数组
+            //Byte[] info = Encoding.Default.GetBytes(text);
+            ////向文件流中写入文件
+            //fs.Write(info, 0, info.Length);
+            //fs.Close();   //关闭文件流
 
         }
 
