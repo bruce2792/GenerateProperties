@@ -198,7 +198,7 @@ AND STYPE.NAME<>'SYSNAME'";
                 properties += "{\r\n";
 
                 properties += $"    public class {table}\r\n";
-                properties += "    {\r\n";
+                properties += "    {\r\n\r\n";
 
 
                 foreach (var item in fieldList)
