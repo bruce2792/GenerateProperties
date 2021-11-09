@@ -184,7 +184,8 @@ LEFT JOIN SYSOBJECTS SO ON SO.ID=SCOL.ID
 LEFT JOIN SYSTYPES AS STYPE ON STYPE.xtype=SCOL.xtype
 Where
 SCOL.ID=OBJECT_ID('{table}')
-AND STYPE.NAME<>'SYSNAME'";
+AND STYPE.NAME<>'SYSNAME' 
+ORDER BY SCOL.colid ASC";
                 var fieldList = DbHelper.ExecSqlDataReader<TableField>(getAllFieldSql, db);
 
 
