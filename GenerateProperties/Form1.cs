@@ -1,5 +1,6 @@
 ﻿using GenerateProperties.Model;
 using GenerateProperties.Util;
+using Newtonsoft.Json.Linq;
 using NLog;
 using System;
 using System.Collections;
@@ -608,6 +609,108 @@ ORDER BY SCOL.colid ASC";
 
         }
 
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
+        }
+        //Newtonsoft documents
+        //https://www.newtonsoft.com/json/help/html/Introduction.htm
+
+        /// <summary>
+        /// Json生成Json实体
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnJsonToEntity_Click(object sender, EventArgs e)
+        {
+            var json = txtJson.Text.Trim();
+            var properties = JsonToEntity(json);
+            this.textBox1.Text = properties;
+            //加入到粘贴板
+            Clipboard.SetDataObject(properties);
+        }
+
+        public string JsonToEntity(string json)
+        {
+            var jObject = JObject.Parse(json);//Newtonsoft.Json中的JObject.Parse转换成json对象
+            Dictionary<string, string> classDicts = new Dictionary<string, string>();//key为类名，value为类中的所有属性定义的字符串
+
+            var properties = string.Empty;
+            properties += $"using System;\r\n";
+            properties += $"using System.Collections.Generic;\r\n";
+            properties += $"using System.Linq;\r\n";
+            properties += $"using System.Text;\r\n";
+            properties += $"using System.Threading.Tasks;\r\n\r\n";
+
+            properties += "namespace Model\r\n";
+            properties += "{\r\n";
+
+            //properties += $"    public class {table}\r\n";
+            //properties += "    {\r\n\r\n";
+
+            
+
+           // classDicts.Add("Root", GetClassDefinion(jObject));//拼接顶层的类
+            //classDicts.Add(item.Name, GetClassDefinion(item.Value));
+            foreach (var item in jObject.Properties())
+            {
+                GetClasses2(item.Value, classDicts);
+            }
+
+
+            return properties;
+        }
+
+        //递归遍历json节点，把需要定义的类存入classes
+        static void GetClasses2(JToken jToken, Dictionary<string, string> classes)
+        {
+            if (jToken is JValue)
+            {
+                return;
+            }
+            var childToken = jToken.First;
+            while (childToken != null)
+            {
+                if (childToken.Type == JTokenType.Property)
+                {
+                    var p = (JProperty)childToken;
+                    var valueType = p.Value.Type;
+
+                    if (valueType == JTokenType.Object)
+                    {
+                        classes.Add(p.Name, string.Empty);
+                        GetClasses2(p.Value, classes);
+                    }
+                    else if (valueType == JTokenType.Array)
+                    {
+                        foreach (var item in (JArray)p.Value)
+                        {
+                            if (item.Type == JTokenType.Object)
+                            {
+                                if (!classes.ContainsKey(p.Name))
+                                {
+                                    classes.Add(p.Name, string.Empty);
+                                }
+
+                                GetClasses2(item, classes);
+                            }
+                        }
+                    }
+                }
+
+                childToken = childToken.Next;
+            }
+        }
 
     }
 }
