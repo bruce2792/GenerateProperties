@@ -39,10 +39,12 @@ namespace GenerateProperties
             this.btGenerateSingleDB = new System.Windows.Forms.Button();
             this.btGenerateAllDB = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.txtJson = new System.Windows.Forms.TextBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.btnJsonToEntity = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.label5 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -135,6 +137,8 @@ namespace GenerateProperties
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.linkLabel1);
             this.groupBox1.Controls.Add(this.txtJson);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.btnJsonToEntity);
@@ -146,6 +150,14 @@ namespace GenerateProperties
             this.groupBox1.Text = "根据JSON内容生成实体属性";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
+            // txtJson
+            // 
+            this.txtJson.Location = new System.Drawing.Point(88, 26);
+            this.txtJson.Multiline = true;
+            this.txtJson.Name = "txtJson";
+            this.txtJson.Size = new System.Drawing.Size(480, 35);
+            this.txtJson.TabIndex = 2;
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -156,12 +168,15 @@ namespace GenerateProperties
             this.label4.Text = "JSON内容：";
             this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
-            // txtJson
+            // btnJsonToEntity
             // 
-            this.txtJson.Location = new System.Drawing.Point(88, 26);
-            this.txtJson.Name = "txtJson";
-            this.txtJson.Size = new System.Drawing.Size(480, 21);
-            this.txtJson.TabIndex = 2;
+            this.btnJsonToEntity.Location = new System.Drawing.Point(577, 26);
+            this.btnJsonToEntity.Name = "btnJsonToEntity";
+            this.btnJsonToEntity.Size = new System.Drawing.Size(124, 35);
+            this.btnJsonToEntity.TabIndex = 7;
+            this.btnJsonToEntity.Text = "生成实体";
+            this.btnJsonToEntity.UseVisualStyleBackColor = true;
+            this.btnJsonToEntity.Click += new System.EventHandler(this.btnJsonToEntity_Click);
             // 
             // groupBox2
             // 
@@ -180,15 +195,26 @@ namespace GenerateProperties
             this.groupBox2.Text = "根据数据库表生成实体";
             this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
-            // btnJsonToEntity
+            // linkLabel1
             // 
-            this.btnJsonToEntity.Location = new System.Drawing.Point(577, 18);
-            this.btnJsonToEntity.Name = "btnJsonToEntity";
-            this.btnJsonToEntity.Size = new System.Drawing.Size(124, 35);
-            this.btnJsonToEntity.TabIndex = 7;
-            this.btnJsonToEntity.Text = "生成实体";
-            this.btnJsonToEntity.UseVisualStyleBackColor = true;
-            this.btnJsonToEntity.Click += new System.EventHandler(this.btnJsonToEntity_Click);
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(623, 0);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(263, 12);
+            this.linkLabel1.TabIndex = 8;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "https://www.bejson.com/convert/json2csharp/";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(492, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(125, 12);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "Json转C#实体网站工具";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // Form1
             // 
@@ -227,6 +253,8 @@ namespace GenerateProperties
         private System.Windows.Forms.TextBox txtJson;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button btnJsonToEntity;
+        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.Label label5;
     }
 }
 

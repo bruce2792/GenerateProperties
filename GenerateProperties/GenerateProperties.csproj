@@ -75,6 +75,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\DbHelper.cs" />
     <Compile Include="Util\ExtensionHelper.cs" />
+    <Compile Include="Util\JsonHelper.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

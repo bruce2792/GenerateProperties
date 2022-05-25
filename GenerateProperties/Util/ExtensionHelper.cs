@@ -109,7 +109,14 @@ namespace GenerateProperties
         }
 
 
-
+        //public static unsafe string ToUpperFirst(this string str)
+        //{
+        //    if (str == null) return null;
+        //    string ret = string.Copy(str);
+        //    fixed (char* ptr = ret)
+        //        *ptr = char.ToUpper(*ptr);
+        //    return ret;
+        //}
 
 
     }

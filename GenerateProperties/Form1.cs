@@ -53,9 +53,12 @@ namespace GenerateProperties
         private void Form1_Load(object sender, EventArgs e)
         {
 
-            var dbList = GetDatabases();
-            if (dbList.HasAny())
-                SetCombox(dbList, this.comboBox1);
+
+
+
+
+
+
             //Task.Factory.StartNew(() =>
             //{
             //    while (true)
@@ -93,6 +96,26 @@ namespace GenerateProperties
             //comboBox1.DataSource = mylist;
             //comboBox1.DisplayMember = "Value";
             //comboBox1.ValueMember = "Key";
+
+            #endregion
+
+
+            #region 预加载数据库的实体
+            var dbList = GetDatabases();
+            if (dbList.HasAny())
+                SetCombox(dbList, this.comboBox1);
+
+            #endregion
+
+            #region 预加载json的实体
+            //预置测试JSON
+            txtJson.Text = "{\"data\":{\"permissionsData\":[{\"id\":\"queryForm\",\"operation\":[\"add\",\"edit\"]}],\"roles\":[{\"id\":\"admin\",\"operation\":[\"add\",\"edit\",\"delete\"]}],\"user\":{\"name\":\"LUIS\",\"avatar\":\"https://gw.alipayobjects.com/zos/rmsportal/ubnKSIfAJTxIgXOKlciN.png\",\"address\":\"上海市\",\"position\":{\"CN\":\"前端工程师 | 蚂蚁金服-计算服务事业群-REACT平台\",\"HK\":\"前端工程師 | 螞蟻金服-計算服務事業群-REACT平台\",\"US\":\"Front-end engineer | Ant Financial - Computing services business group - REACT platform\"}},\"token\":\"Authorization:0.03126884429870813\",\"expireAt\":\"2022-05-24T08:09:10.223Z\"},\"code\":0,\"message\":\"下午好，欢迎回来\"}";
+
+            var json = txtJson.Text.Trim();
+            var properties = JsonToEntity(json);
+            this.textBox1.Text = properties;
+            //加入到粘贴板
+            Clipboard.SetDataObject(properties);
 
             #endregion
         }
@@ -349,7 +372,8 @@ ORDER BY SCOL.colid ASC";
         {
 
 
-
+            //打开生成数据库文件的所在文件夹
+            System.Diagnostics.Process.Start("Explorer.exe", GetRootPath());
             Task.Factory.StartNew(() =>
             {
                 //isGeneralSingleDB = true;
@@ -363,9 +387,12 @@ ORDER BY SCOL.colid ASC";
                     var tableList = GetTableList(db);
                     //删除此db目录
                     var dbPath = GetDbPath(db);
-                    if (Directory.Exists(dbPath))
-                        Directory.Delete(dbPath, true);
-                    else
+                    //if (Directory.Exists(dbPath))
+                    //    Directory.Delete(dbPath, true);
+                    //else
+                    //    Directory.CreateDirectory(dbPath);
+
+                    if (!Directory.Exists(dbPath))  //如果不存在目录则创建，已有的实体文件会覆盖到此文件上,查看文件是否更新查看修改时间即可
                         Directory.CreateDirectory(dbPath);
 
                     Parallel.ForEach(tableList, (table, ParallelLoopState) =>
@@ -378,6 +405,22 @@ ORDER BY SCOL.colid ASC";
 
 
             });
+        }
+
+        /// <summary>
+        /// 获取根目录
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <returns></returns>
+        private string GetRootPath()
+        {
+            //驱动器盘符列表
+            var driver = GetLastDriver();
+
+            string rootPath = $@"{driver}\GeneratePropertiesOutput\";
+
+            return rootPath;
+
         }
 
         /// <summary>
@@ -565,12 +608,20 @@ ORDER BY SCOL.colid ASC";
 
 
             //删除此db目录
-            if (Directory.Exists(dbPath))
-                Directory.Delete(dbPath, true);
-            else
-                Directory.CreateDirectory(dbPath);
+            //if (Directory.Exists(dbPath))
+            //    Directory.Delete(dbPath, true);
+            //else
+            //    Directory.CreateDirectory(dbPath);
+
+            if (!Directory.Exists(dbPath))
+                Directory.CreateDirectory(dbPath);//如果不存在目录则创建，已有的实体文件会覆盖到此文件上,查看文件是否更新查看修改时间即可
+
+
+            //打开生成数据库文件的所在文件夹
+            System.Diagnostics.Process.Start("Explorer.exe", dbPath);
             //DirectoryInfo root = new DirectoryInfo(path);
             //FileInfo[] files = root.GetFiles();
+
 
             Task.Factory.StartNew(() =>
             {
@@ -599,13 +650,15 @@ ORDER BY SCOL.colid ASC";
             });
 
 
-
             //if (!isGeneralSingleDB)
             //{
             //    logger.Info("进入btnGenerateSingleDB_Click执行...");
 
             //}
             //logger.Info("跳出btnGenerateSingleDB_Click...");
+
+            //http://www.manongjc.com/detail/27-vslkmlzhyrzgkxv.html 参考资料
+
 
         }
 
@@ -638,79 +691,68 @@ ORDER BY SCOL.colid ASC";
             this.textBox1.Text = properties;
             //加入到粘贴板
             Clipboard.SetDataObject(properties);
+
         }
 
-        public string JsonToEntity(string json)
+        public string JsonToEntity(string jsonString)
         {
-            var jObject = JObject.Parse(json);//Newtonsoft.Json中的JObject.Parse转换成json对象
-            Dictionary<string, string> classDicts = new Dictionary<string, string>();//key为类名，value为类中的所有属性定义的字符串
-
-            var properties = string.Empty;
-            properties += $"using System;\r\n";
-            properties += $"using System.Collections.Generic;\r\n";
-            properties += $"using System.Linq;\r\n";
-            properties += $"using System.Text;\r\n";
-            properties += $"using System.Threading.Tasks;\r\n\r\n";
-
-            properties += "namespace Model\r\n";
-            properties += "{\r\n";
-
-            //properties += $"    public class {table}\r\n";
-            //properties += "    {\r\n\r\n";
-
-            
-
-           // classDicts.Add("Root", GetClassDefinion(jObject));//拼接顶层的类
-            //classDicts.Add(item.Name, GetClassDefinion(item.Value));
-            foreach (var item in jObject.Properties())
+            try
             {
-                GetClasses2(item.Value, classDicts);
-            }
+                var jObject = JObject.Parse(jsonString);//Newtonsoft.Json中的JObject.Parse转换成json对象
 
-
-            return properties;
-        }
-
-        //递归遍历json节点，把需要定义的类存入classes
-        static void GetClasses2(JToken jToken, Dictionary<string, string> classes)
-        {
-            if (jToken is JValue)
-            {
-                return;
-            }
-            var childToken = jToken.First;
-            while (childToken != null)
-            {
-                if (childToken.Type == JTokenType.Property)
+                Dictionary<string, string> classDicts = new Dictionary<string, string>();//key为类名，value为类中的所有属性定义的字符串
+                classDicts.Add("Root", JsonHelper.GetClassDefinion(jObject));//拼接顶层的类
+                foreach (var item in jObject.Properties())
                 {
-                    var p = (JProperty)childToken;
-                    var valueType = p.Value.Type;
-
-                    if (valueType == JTokenType.Object)
+                    if (item.Value.HasValues)//有子属性
                     {
-                        classes.Add(p.Name, string.Empty);
-                        GetClasses2(p.Value, classes);
-                    }
-                    else if (valueType == JTokenType.Array)
-                    {
-                        foreach (var item in (JArray)p.Value)
-                        {
-                            if (item.Type == JTokenType.Object)
-                            {
-                                if (!classes.ContainsKey(p.Name))
-                                {
-                                    classes.Add(p.Name, string.Empty);
-                                }
-
-                                GetClasses2(item, classes);
-                            }
-                        }
+                        classDicts.Add(item.Name, JsonHelper.GetClassDefinion(item.Value));
+                        JsonHelper.GetClasses(item.Value, classDicts);
                     }
                 }
+                //下面是将所有的类定义完整拼接起来
+                StringBuilder sb = new StringBuilder();
 
-                childToken = childToken.Next;
+
+
+
+
+
+                sb.Append($"using System;\r\n");
+                sb.Append($"using System.Collections.Generic;\r\n");
+                sb.Append($"using System.Linq;\r\n");
+                sb.Append($"using System.Text;\r\n");
+                sb.Append($"using System.Threading.Tasks;\r\n\r\n");
+                sb.Append("namespace Model\r\n");
+                sb.Append("{\r\n");
+
+                foreach (var item in classDicts)
+                {
+                    sb.Append($"    public class {item.Key}\r\n");
+                    sb.Append("    {\r\n\r\n");
+                    sb.Append(item.Value);
+                    sb.Append("    }\r\n");
+                }
+                sb.Append("}");
+                return sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                return string.Empty;
             }
         }
 
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(this.linkLabel1.Text);
+            //能不能让IE新开一个窗口？只要把代码改成：
+            //System.Diagnostics.Process.Start("iexplore.exe", "http://www.google.com");
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
