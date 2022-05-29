@@ -111,11 +111,8 @@ namespace GenerateProperties
             //预置测试JSON
             txtJson.Text = "{\"data\":{\"permissionsData\":[{\"id\":\"queryForm\",\"operation\":[\"add\",\"edit\"]}],\"roles\":[{\"id\":\"admin\",\"operation\":[\"add\",\"edit\",\"delete\"]}],\"user\":{\"name\":\"LUIS\",\"avatar\":\"https://gw.alipayobjects.com/zos/rmsportal/ubnKSIfAJTxIgXOKlciN.png\",\"address\":\"上海市\",\"position\":{\"CN\":\"前端工程师 | 蚂蚁金服-计算服务事业群-REACT平台\",\"HK\":\"前端工程師 | 螞蟻金服-計算服務事業群-REACT平台\",\"US\":\"Front-end engineer | Ant Financial - Computing services business group - REACT platform\"}},\"token\":\"Authorization:0.03126884429870813\",\"expireAt\":\"2022-05-24T08:09:10.223Z\"},\"code\":0,\"message\":\"下午好，欢迎回来\"}";
 
-            var json = txtJson.Text.Trim();
-            var properties = JsonToEntity(json);
-            this.textBox1.Text = properties;
-            //加入到粘贴板
-            Clipboard.SetDataObject(properties);
+            JsonToEntity();
+
 
             #endregion
         }
@@ -320,14 +317,14 @@ ORDER BY SCOL.colid ASC";
             {
                 this.textBox1.Text = properties;
                 //加入到粘贴板
-                Clipboard.SetDataObject(properties);
+                SetClipboard(properties);
 
                 var dbPath = GetDbPath(db);
                 if (Directory.Exists(dbPath) == false)
                     Directory.CreateDirectory(dbPath);
 
                 //创建文件
-                GenerateFile(db, table, dbPath, properties);
+                GenerateDBFile(db, table, dbPath, properties);
             }
 
         }
@@ -360,7 +357,7 @@ ORDER BY SCOL.colid ASC";
             #endregion
 
             if (textBox1.Text.IsNotNullOrEmpty())
-                Clipboard.SetDataObject(textBox1.Text);
+                SetClipboard(textBox1.Text);
         }
 
         /// <summary>
@@ -399,7 +396,7 @@ ORDER BY SCOL.colid ASC";
                     {
                         //  ParallelLoopStates.Add(ParallelLoopState);
                         var properties = GetTableField(db, table);
-                        GenerateFile(db, table, dbPath, properties);
+                        GenerateDBFile(db, table, dbPath, properties);
                     });
                 });
 
@@ -440,7 +437,7 @@ ORDER BY SCOL.colid ASC";
         }
 
 
-        private void GenerateFile(string db, string table, string dbPath, string content)
+        private void GenerateDBFile(string db, string table, string dbPath, string content)
         {
             if (db.IsNullOrEmpty() || table.IsNullOrEmpty() || textBox1.Text.IsNullOrEmpty())
                 return;
@@ -449,6 +446,12 @@ ORDER BY SCOL.colid ASC";
             var fileName = $@"{dbPath}{table}.cs";
             string text = content;
 
+            GenerateFile(fileName, text);
+
+        }
+
+        private void GenerateFile(string fileName, string text)
+        {
             File.WriteAllText(fileName, text);
 
             //FileStream fs = File.OpenWrite(fileName);
@@ -459,6 +462,7 @@ ORDER BY SCOL.colid ASC";
             //fs.Close();   //关闭文件流
 
         }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -642,7 +646,7 @@ ORDER BY SCOL.colid ASC";
                 {
                     //  ParallelLoopStates.Add(ParallelLoopState);
                     var properties = GetTableField(db, table);
-                    GenerateFile(db, table, dbPath, properties);
+                    GenerateDBFile(db, table, dbPath, properties);
                 });
 
 
@@ -686,12 +690,31 @@ ORDER BY SCOL.colid ASC";
         /// <param name="e"></param>
         private void btnJsonToEntity_Click(object sender, EventArgs e)
         {
+            JsonToEntity();
+        }
+
+        void JsonToEntity()
+        {
             var json = txtJson.Text.Trim();
             var properties = JsonToEntity(json);
             this.textBox1.Text = properties;
-            //加入到粘贴板
-            Clipboard.SetDataObject(properties);
 
+
+            //加入到粘贴板
+            SetClipboard(properties);
+
+            #region 生成文件
+
+            //savePath
+            string savePath = $@"{GetRootPath()}JsonToEntity";
+            if (Directory.Exists(savePath) == false)
+                Directory.CreateDirectory(savePath);
+
+            var fileName = $"{savePath}\\entity.cs";
+            //创建文件
+            GenerateFile(fileName, properties);
+
+            #endregion
         }
 
         public string JsonToEntity(string jsonString)
@@ -753,6 +776,27 @@ ORDER BY SCOL.colid ASC";
         private void label5_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void txtJson_TextChanged(object sender, EventArgs e)
+        {
+            JsonToEntity();
+        }
+
+        /// <summary>
+        /// 设置剪贴板内容
+        /// </summary>
+        /// <param name="content"></param>
+        void SetClipboard(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+                return;
+            Clipboard.SetText(content);
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            
         }
     }
 }
