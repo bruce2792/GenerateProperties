@@ -794,9 +794,5 @@ ORDER BY SCOL.colid ASC";
             Clipboard.SetText(content);
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            
-        }
     }
 }
