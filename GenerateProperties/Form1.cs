@@ -45,20 +45,13 @@ namespace GenerateProperties
             string db = this.comboBox1.Text;
             var tableList = GetTableList(db);
             if (tableList.HasAny())
-                SetCombox(tableList, this.comboBox2);
+                SetCombox(tableList.OrderBy(a => a).ToList(), this.comboBox2);
         }
 
 
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
-
-
-
-
-
-
             //Task.Factory.StartNew(() =>
             //{
             //    while (true)
@@ -100,10 +93,12 @@ namespace GenerateProperties
             #endregion
 
 
+
+
             #region 预加载数据库的实体
             var dbList = GetDatabases();
             if (dbList.HasAny())
-                SetCombox(dbList, this.comboBox1);
+                SetCombox(dbList.OrderBy(a => a).ToList(), this.comboBox1);
 
             #endregion
 
@@ -123,7 +118,7 @@ namespace GenerateProperties
             //获取表列表
             var tableList = GetTableList(db);
 
-            SetCombox(tableList, this.comboBox2);
+            SetCombox(tableList.OrderBy(a => a).ToList(), this.comboBox2);
         }
 
         private void SetCombox(List<string> source, ComboBox comboBox)
@@ -136,9 +131,9 @@ namespace GenerateProperties
                     mylist.Add(new DictionaryEntry(i, source[i]));
                 }
 
-                comboBox.DataSource = mylist;
-                comboBox.DisplayMember = "Value";
-                comboBox.ValueMember = "Key";
+                comboBox.DataSource = source;
+                //comboBox.DisplayMember = "Value";
+                //comboBox.ValueMember = "Key";
             }
         }
 
@@ -227,6 +222,12 @@ ORDER BY SCOL.colid ASC";
                 {
                     switch (item.FieldType)
                     {
+                        case "bit":
+                            properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public bool {item.FieldName} {{get;set;}}\r\n\r\n";
+                            break;
+                        case "char":
+                            properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public string {item.FieldName} {{get;set;}}\r\n\r\n";
+                            break;
                         case "varchar":
                             properties += $"        /// <summary>\r\n        /// {item.FieldNotes}\r\n        /// </summary>\r\n        public string {item.FieldName} {{get;set;}}\r\n\r\n";
                             break;
@@ -794,5 +795,19 @@ ORDER BY SCOL.colid ASC";
             Clipboard.SetText(content);
         }
 
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            //释放资源
+            this.Dispose();
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            var tables = comboBox2.DataSource as List<string>;
+            if (tables.IndexOf(textBox2.Text)>-1)
+            {
+                this.comboBox2.SelectedIndex = tables.IndexOf(textBox2.Text);
+            }
+        }
     }
 }

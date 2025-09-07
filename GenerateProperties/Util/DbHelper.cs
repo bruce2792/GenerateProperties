@@ -357,114 +357,116 @@ namespace GenerateProperties.Util
         /// <returns>查询结果</returns>
         public static List<T> ExecSqlDataReader<T>(string strSQL, string db, SqlParameter[] parameters)
         {
+
             var SqlConnectionStr = string.Empty;
             if (db == "master")
                 SqlConnectionStr = DefaultConnString;
             else
                 SqlConnectionStr = DefaultConnString.Replace("Initial Catalog=master", $"Initial Catalog = {db}");
 
-            var conn = new SqlConnection(SqlConnectionStr);
-            conn.Open();
-            SqlCommand cmd = GetSqlCommand(conn, strSQL, CommandType.Text, parameters);
-            SqlDataReader reader = cmd.ExecuteReader();
-            List<T> list = new List<T>();
-
-            if (typeof(T).IsClass && typeof(T) != typeof(string))
+            using (var conn = new SqlConnection(SqlConnectionStr))
             {
-                //引用类型 class
-                using (reader)
+                conn.Open();
+                using (SqlCommand cmd = GetSqlCommand(conn, strSQL, CommandType.Text, parameters))
                 {
-                    if (reader.HasRows)
+                    List<T> list = new List<T>();
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        Type type = typeof(T);
-                        //PropertyInfo[] pArray = t.GetProperties();
-                        var noMappingField = new List<string> { "ID", "ObjectID", "Tags", "CreationTime" };
-                        while (reader.Read())
+                        if (typeof(T).IsClass && typeof(T) != typeof(string))
                         {
-                            //Assembly ass = Assembly.GetAssembly(t);//获取泛型的程序集
-                            //Object assemblyObj = ass.CreateInstance(t.FullName);//泛型实例化'
-                            T assemblyObj = (T)Activator.CreateInstance(type);//创建该类型的对象
+                            //引用类型 class
 
-                            foreach (var item in type.GetProperties())//遍历对象的属性
+                            if (reader.HasRows)
                             {
-                                //if (!typeof(BaseModel).IsAssignableFrom(item.PropertyType))//如果是其他实体类就不加载
-
-                                if (!noMappingField.Contains(item.Name))
+                                Type type = typeof(T);
+                                //PropertyInfo[] pArray = t.GetProperties();
+                                var noMappingField = new List<string> { "ID", "ObjectID", "Tags", "CreationTime" };
+                                while (reader.Read())
                                 {
-                                    // item.SetValue(assemblyObj, reader[item.Name].ToString());//对对象的属性赋值
-                                    //if (item.Name == "ID")
-                                    //{
-                                    //    //
-                                    //}
-                                    if (item.PropertyType.Equals(typeof(string)))//判断属性的类型是不是String
+                                    //Assembly ass = Assembly.GetAssembly(t);//获取泛型的程序集
+                                    //Object assemblyObj = ass.CreateInstance(t.FullName);//泛型实例化'
+                                    T assemblyObj = (T)Activator.CreateInstance(type);//创建该类型的对象
+
+                                    foreach (var item in type.GetProperties())//遍历对象的属性
                                     {
-                                        item.SetValue(assemblyObj, reader[item.Name].ToString(), null);//给泛型的属性赋值
-                                    }
-                                    else if (item.PropertyType.Equals(typeof(int)))
-                                    {
-                                        item.SetValue(assemblyObj, reader[item.Name].ToString().ToInt(), null);
-                                    }
-                                    else if (item.PropertyType.Equals(typeof(short)))
-                                    {
-                                        item.SetValue(assemblyObj, reader[item.Name].ToString().ToSmallInt(), null);
-                                    }
-                                    else if (item.PropertyType.Equals(typeof(DateTime)))
-                                    {
-                                        item.SetValue(assemblyObj, reader[item.Name].ToString().ToDateTime(), null);
+                                        //if (!typeof(BaseModel).IsAssignableFrom(item.PropertyType))//如果是其他实体类就不加载
+
+                                        if (!noMappingField.Contains(item.Name))
+                                        {
+                                            // item.SetValue(assemblyObj, reader[item.Name].ToString());//对对象的属性赋值
+                                            //if (item.Name == "ID")
+                                            //{
+                                            //    //
+                                            //}
+                                            if (item.PropertyType.Equals(typeof(string)))//判断属性的类型是不是String
+                                            {
+                                                item.SetValue(assemblyObj, reader[item.Name].ToString(), null);//给泛型的属性赋值
+                                            }
+                                            else if (item.PropertyType.Equals(typeof(int)))
+                                            {
+                                                item.SetValue(assemblyObj, reader[item.Name].ToString().ToInt(), null);
+                                            }
+                                            else if (item.PropertyType.Equals(typeof(short)))
+                                            {
+                                                item.SetValue(assemblyObj, reader[item.Name].ToString().ToSmallInt(), null);
+                                            }
+                                            else if (item.PropertyType.Equals(typeof(DateTime)))
+                                            {
+                                                item.SetValue(assemblyObj, reader[item.Name].ToString().ToDateTime(), null);
+                                            }
+
+                                        }
                                     }
 
+
+                                    //Array.ForEach<PropertyInfo>(pArray, (p) =>
+                                    //{
+                                    //    if (!noMappingField.Contains(p.Name))
+                                    //    {
+                                    //        if (p.PropertyType.Equals(typeof(string)))//判断属性的类型是不是String
+                                    //        {
+                                    //            p.SetValue(assemblyObj, reader[p.Name].ToString(), null);//给泛型的属性赋值
+                                    //        }
+                                    //        else if (p.PropertyType.Equals(typeof(int)))
+                                    //        {
+                                    //            p.SetValue(assemblyObj, reader[p.Name].ToString().ToInt(), null);
+                                    //        }
+                                    //        else if (p.PropertyType.Equals(typeof(short)))
+                                    //        {
+                                    //            p.SetValue(assemblyObj, reader[p.Name].ToString().ToSmallInt(), null);
+                                    //        }
+                                    //        else if (p.PropertyType.Equals(typeof(DateTime)))
+                                    //        {
+                                    //            p.SetValue(assemblyObj, reader[p.Name].ToString().ToDateTime(), null);
+                                    //        }
+                                    //    }
+                                    //});
+                                    list.Add(assemblyObj);
+                                }
+                                // Console.WriteLine();
+                                reader.Close();
+
+                            }
+                        }
+                        else
+                        {
+                            //值类型 struct
+                            using (reader)
+                            {
+                                if (reader.HasRows)
+                                {
+                                    while (reader.Read())
+                                    {
+                                        list.Add((T)reader[0]);
+                                    }
+                                    reader.Close();
                                 }
                             }
-
-
-                            //Array.ForEach<PropertyInfo>(pArray, (p) =>
-                            //{
-                            //    if (!noMappingField.Contains(p.Name))
-                            //    {
-                            //        if (p.PropertyType.Equals(typeof(string)))//判断属性的类型是不是String
-                            //        {
-                            //            p.SetValue(assemblyObj, reader[p.Name].ToString(), null);//给泛型的属性赋值
-                            //        }
-                            //        else if (p.PropertyType.Equals(typeof(int)))
-                            //        {
-                            //            p.SetValue(assemblyObj, reader[p.Name].ToString().ToInt(), null);
-                            //        }
-                            //        else if (p.PropertyType.Equals(typeof(short)))
-                            //        {
-                            //            p.SetValue(assemblyObj, reader[p.Name].ToString().ToSmallInt(), null);
-                            //        }
-                            //        else if (p.PropertyType.Equals(typeof(DateTime)))
-                            //        {
-                            //            p.SetValue(assemblyObj, reader[p.Name].ToString().ToDateTime(), null);
-                            //        }
-                            //    }
-                            //});
-                            list.Add(assemblyObj);
                         }
-                        // Console.WriteLine();
-                        reader.Close();
-
+                        return list;
                     }
                 }
             }
-            else
-            {
-                //值类型 struct
-                using (reader)
-                {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            list.Add((T)reader[0]);
-                        }
-                        reader.Close();
-                    }
-                }
-            }
-
-            conn.Close();
-            return list;
         }
 
 

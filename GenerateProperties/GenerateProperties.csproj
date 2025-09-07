@@ -180,6 +180,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationContext.cs" />
+    <Compile Include="Model\DB_Connectionstrings.cs" />
+    <Compile Include="Util\TxtHelper.cs" />
+    <Content Include="db_connectionstrings.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -220,6 +226,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="winform常见控件缩写.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
