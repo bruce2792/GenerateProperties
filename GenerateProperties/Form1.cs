@@ -1,12 +1,16 @@
-﻿using GenerateProperties.Model;
+﻿using AntdUI;
+using GenerateProperties.Model;
 using GenerateProperties.Util;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
+using NuGet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -29,6 +33,29 @@ namespace GenerateProperties
         {
             InitializeComponent();
         }
+
+        // 定义委托和事件
+        public delegate void UpdateComboBoxDelegate(IEnumerable<string> newItems);
+        public event UpdateComboBoxDelegate UpdateComboBoxRequested;
+
+        // 更新ComboBox的方法
+        private void UpdateComboBoxItems(IEnumerable<string> newItems)
+        {
+            // 确保在主线程上更新UI
+            if (cboChooseDatabase.InvokeRequired)
+            {
+                //comboBox.Invoke(new Action<List<string>>(comboBox,UpdateComboBoxItems), newItems);
+                cboChooseDatabase.Invoke(new Action<IEnumerable<string>>(UpdateComboBoxItems), newItems);
+                return;
+            }
+
+            cboChooseDatabase.Items.Clear();
+            cboChooseDatabase.Items.AddRange(newItems.ToArray());
+
+            if (cboChooseDatabase.Items.Count > 0)
+                cboChooseDatabase.SelectedIndex = 0;
+        }
+
 
         private List<string> GetDatabases()
         {
@@ -91,16 +118,11 @@ namespace GenerateProperties
             //comboBox1.ValueMember = "Key";
 
             #endregion
+            //加载数据库连接字符串
+            SetCombox(Setup.dbs.Select(a => a.DBName).ToList(), this.cboChooseDatabase);
 
-
-
-
-            #region 预加载数据库的实体
-            var dbList = GetDatabases();
-            if (dbList.HasAny())
-                SetCombox(dbList.OrderBy(a => a).ToList(), this.comboBox1);
-
-            #endregion
+            //加载数据库
+            //RenderDatabases();
 
             #region 预加载json的实体
             //预置测试JSON
@@ -110,13 +132,36 @@ namespace GenerateProperties
 
 
             #endregion
+
+            this.table1.EditMode = TEditMode.Click;//单击进入修改模式
+            this.table1.Binding(tableFields);//table绑定数据源
         }
 
+        /// <summary>
+        /// 加载数据库
+        /// </summary>
+        void RenderDatabases()
+        {
+            #region 预加载数据库的实体
+            var dbList = GetDatabases();
+            if (dbList.HasAny())
+                SetCombox(dbList.OrderBy(a => a).ToList(), this.comboBox1);
+
+            #endregion
+        }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             string db = this.comboBox1.Text;
+
+            var builder = new SqlConnectionStringBuilder(DbHelper.DefaultConnString);
+            builder.InitialCatalog = db;
+            DbHelper.DefaultConnString = builder.ConnectionString;
+
             //获取表列表
             var tableList = GetTableList(db);
+
+            //切换数据库 设置连接字符串
+           
 
             SetCombox(tableList.OrderBy(a => a).ToList(), this.comboBox2);
         }
@@ -148,8 +193,8 @@ namespace GenerateProperties
                 //logger.Info("combobox1_index===" + combobox1_index);
 
                 #region 读取有哪些表
-                var getAllTableSql = "SELECT NAME FROM SYSOBJECTS WHERE TYPE='U'  --读取所有表";
-                tableList = DbHelper.ExecSqlDataReader<string>(getAllTableSql, db);
+                var getAllTableSql = "SELECT NAME FROM SYSOBJECTS WHERE TYPE='U'";
+                tableList = DbHelper.ExecSqlDataReader<string>(getAllTableSql);
 
                 #endregion
             }
@@ -173,18 +218,10 @@ namespace GenerateProperties
         }
 
 
-        /// <summary>
-        /// 获取数据库表中的字段
-        /// </summary>
-        private string GetTableField(string db, string table)
+        List<TableField> _GetTableField(string table, string db)
         {
-
-            var properties = string.Empty;
-
-            if (table != "System.Collections.DictionaryEntry")
-            {
-                #region 读取有哪些字段
-                var getAllFieldSql = $@"Select 
+            #region 读取有哪些字段
+            var getAllFieldSql = $@"Select 
 SCOL.NAME AS FieldName,                    --列名
 SCOL.ISNULLABLE AS FieldIsNullable,            --是否为NULL
 SCOL.PREC AS Length,                    --长度
@@ -202,8 +239,21 @@ Where
 SCOL.ID=OBJECT_ID('{table}')
 AND STYPE.NAME<>'SYSNAME' 
 ORDER BY SCOL.colid ASC";
-                var fieldList = DbHelper.ExecSqlDataReader<TableField>(getAllFieldSql, db);
+            return DbHelper.ExecSqlDataReader<TableField>(getAllFieldSql);
+        }
 
+        /// <summary>
+        /// 获取数据库表中的字段
+        /// </summary>
+        private string GetTableField(string db, string table)
+        {
+
+            var properties = string.Empty;
+
+            if (table != "System.Collections.DictionaryEntry")
+            {
+
+                var fieldList = _GetTableField(table, db);
 
                 properties += $"using System;\r\n";
                 properties += $"using System.Collections.Generic;\r\n";
@@ -327,6 +377,8 @@ ORDER BY SCOL.colid ASC";
                 //创建文件
                 GenerateDBFile(db, table, dbPath, properties);
             }
+
+            EditSqlFieldAnnotation();
 
         }
 
@@ -720,50 +772,44 @@ ORDER BY SCOL.colid ASC";
 
         public string JsonToEntity(string jsonString)
         {
-            try
+            var jObject = JObject.Parse(jsonString);//Newtonsoft.Json中的JObject.Parse转换成json对象
+
+            Dictionary<string, string> classDicts = new Dictionary<string, string>();//key为类名，value为类中的所有属性定义的字符串
+            classDicts.Add("Root", JsonHelper.GetClassDefinion(jObject));//拼接顶层的类
+            foreach (var item in jObject.Properties())
             {
-                var jObject = JObject.Parse(jsonString);//Newtonsoft.Json中的JObject.Parse转换成json对象
-
-                Dictionary<string, string> classDicts = new Dictionary<string, string>();//key为类名，value为类中的所有属性定义的字符串
-                classDicts.Add("Root", JsonHelper.GetClassDefinion(jObject));//拼接顶层的类
-                foreach (var item in jObject.Properties())
+                if (item.Value.HasValues)//有子属性
                 {
-                    if (item.Value.HasValues)//有子属性
-                    {
-                        classDicts.Add(item.Name, JsonHelper.GetClassDefinion(item.Value));
-                        JsonHelper.GetClasses(item.Value, classDicts);
-                    }
+                    classDicts.Add(item.Name, JsonHelper.GetClassDefinion(item.Value));
+                    JsonHelper.GetClasses(item.Value, classDicts);
                 }
-                //下面是将所有的类定义完整拼接起来
-                StringBuilder sb = new StringBuilder();
-
-
-
-
-
-
-                sb.Append($"using System;\r\n");
-                sb.Append($"using System.Collections.Generic;\r\n");
-                sb.Append($"using System.Linq;\r\n");
-                sb.Append($"using System.Text;\r\n");
-                sb.Append($"using System.Threading.Tasks;\r\n\r\n");
-                sb.Append("namespace Model\r\n");
-                sb.Append("{\r\n");
-
-                foreach (var item in classDicts)
-                {
-                    sb.Append($"    public class {item.Key}\r\n");
-                    sb.Append("    {\r\n\r\n");
-                    sb.Append(item.Value);
-                    sb.Append("    }\r\n");
-                }
-                sb.Append("}");
-                return sb.ToString();
             }
-            catch (Exception ex)
+            //下面是将所有的类定义完整拼接起来
+            StringBuilder sb = new StringBuilder();
+
+
+
+
+
+
+            sb.Append($"using System;\r\n");
+            sb.Append($"using System.Collections.Generic;\r\n");
+            sb.Append($"using System.Linq;\r\n");
+            sb.Append($"using System.Text;\r\n");
+            sb.Append($"using System.Threading.Tasks;\r\n\r\n");
+            sb.Append("namespace Model\r\n");
+            sb.Append("{\r\n");
+
+            foreach (var item in classDicts)
             {
-                return string.Empty;
+                sb.Append($"    public class {item.Key}\r\n");
+                sb.Append("    {\r\n\r\n");
+                sb.Append(item.Value);
+                sb.Append("    }\r\n");
             }
+            sb.Append("}");
+            return sb.ToString();
+
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -804,10 +850,91 @@ ORDER BY SCOL.colid ASC";
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             var tables = comboBox2.DataSource as List<string>;
-            if (tables.IndexOf(textBox2.Text)>-1)
-            {
-                this.comboBox2.SelectedIndex = tables.IndexOf(textBox2.Text);
-            }
+
+            var targetTables = tables.Where(a => a.ToLower().Contains(textBox2.Text.ToLower())).ToList();
+            if (targetTables != null && targetTables.Count > 0)
+                this.lstFilterTable.DataSource = targetTables;
+
+
+
+
+        }
+
+        private void 管理数据库ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frm_ManageDatabase frm = new frm_ManageDatabase();
+            frm.Show();
+        }
+
+        private void 测试在全局捕捉主线程和非主线程异常ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frm_TestCatchException frm = new frm_TestCatchException();
+            frm.Show();
+        }
+
+        private void cboChooseDatabase_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DbHelper.DefaultConnString = Setup.dbs[this.cboChooseDatabase.SelectedIndex].DBConnectionString;
+            RenderDatabases();
+
+            var builder = new SqlConnectionStringBuilder(DbHelper.DefaultConnString);
+
+            //设置数据库连接字符串中的当前数据库
+            var databases = comboBox1.DataSource as List<string>;
+
+            var targetDatabase = databases.Where(a => a.ToLower() == builder.InitialCatalog.ToLower()).FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(targetDatabase))
+                this.comboBox1.SelectedIndex = databases.FindIndex(a => a == targetDatabase);
+
+
+
+
+        }
+
+        private void btnEditSqlFieldAnnotation_Click(object sender, EventArgs e)
+        {
+            EditSqlFieldAnnotation();
+        }
+
+        void EditSqlFieldAnnotation()
+        {
+            string db = this.comboBox1.Text;
+            //table
+            string table = this.comboBox2.Text;
+            //窗口状态持久化，传入dbhelper，编辑数据库表字段注释
+            var fieldList = _GetTableField(table, db);
+            //子窗体处理字段
+            //new frm_EditSqlFieldAnnotation(fieldList).Show();
+            tableFields = new BindingList<TableField>();
+            tableFields.AddRange(fieldList);
+            this.table1.Binding(tableFields);//table绑定数据源
+
+        }
+        private BindingList<TableField> tableFields = new BindingList<TableField>();
+
+        private void lstFilterTable_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var tables = comboBox2.DataSource as List<string>;
+            var targetTable = tables.Where(a => a.ToLower() == this.lstFilterTable.Text.ToLower()).FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(targetTable))
+                this.comboBox2.SelectedIndex = tables.FindIndex(a => a == targetTable);
+        }
+
+        private bool table1_CellEndEdit(object sender, TableEndEditEventArgs e)
+        {
+            //table
+            string table = this.comboBox2.Text;
+            var updateSqlFieldSql = $@"EXEC sys.sp_updateextendedproperty
+    @name = N'MS_Description',  -- 固定为 MS_Description，表示注释属性
+    @value = N'${e.Value}',   -- 此处替换为你需要设置的新注释文本
+    @level0type = N'SCHEMA',   -- 一级对象类型为架构
+    @level0name = N'dbo',      -- 一级对象名，通常是架构名，如 dbo
+    @level1type = N'TABLE',    -- 二级对象类型为表
+    @level1name = N'{table}', -- 此处替换为你的表名
+    @level2type = N'COLUMN',   -- 三级对象类型为列
+    @level2name = N'{tableFields[e.RowIndex - 1].FieldName}'; -- 此处替换为你的字段名";
+            DbHelper.ExecSqlNonQuerry(updateSqlFieldSql);
+            return true;
         }
     }
 }

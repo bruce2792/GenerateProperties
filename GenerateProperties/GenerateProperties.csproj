@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AntdUI, Version=2.1.3.0, Culture=neutral, PublicKeyToken=0e24e5118ea3d6af, processorArchitecture=MSIL">
+      <HintPath>..\packages\AntdUI.2.1.3\lib\net46\AntdUI.dll</HintPath>
+    </Reference>
     <Reference Include="JsonToCSharp, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\JsonToCSharp.1.0.0.1\lib\net462\Plugins\JsonToCSharp.dll</HintPath>
     </Reference>
@@ -97,6 +100,7 @@
     <Reference Include="System.Data.SqlClient, Version=4.6.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SqlClient.4.8.3\lib\net461\System.Data.SqlClient.dll</HintPath>
     </Reference>
+    <Reference Include="System.Design" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.IdentityModel" />
@@ -181,7 +185,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationContext.cs" />
+    <Compile Include="ErrorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_EditSqlFieldAnnotation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_EditSqlFieldAnnotation.Designer.cs">
+      <DependentUpon>frm_EditSqlFieldAnnotation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frm_ManageDatabase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_ManageDatabase.Designer.cs">
+      <DependentUpon>frm_ManageDatabase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frm_TestCatchException.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_TestCatchException.Designer.cs">
+      <DependentUpon>frm_TestCatchException.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Frm_TestCatchExceptionForm.cs" />
     <Compile Include="Model\DB_Connectionstrings.cs" />
+    <Compile Include="Common\Setup.cs" />
+    <Compile Include="Util\ExtendFunc.cs" />
     <Compile Include="Util\TxtHelper.cs" />
     <Content Include="db_connectionstrings.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -200,6 +228,12 @@
     <Compile Include="Util\JsonHelper.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frm_EditSqlFieldAnnotation.resx">
+      <DependentUpon>frm_EditSqlFieldAnnotation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frm_ManageDatabase.resx">
+      <DependentUpon>frm_ManageDatabase.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

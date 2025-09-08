@@ -9,26 +9,28 @@ namespace GenerateProperties.Util
 {
     public class TxtHelper
     {
-        public static List<string> GetTxtFileString(string filePath)
+        public static string GetTxt(string filePath)
         {
-            List<string> ret = new List<string>();
-            try
-            {
+            //如果fs.open 文件不存在则创建,存在则读取内容返回
 
-                using (StreamReader reader = new StreamReader(filePath))
+            using (FileStream fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            {
+                using (var sr = new StreamReader(fs))
                 {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        ret.Add(line);
-                    }
+                    return sr.ReadToEnd();
                 }
             }
-            catch (IOException e)
+          
+        }
+
+
+        public static void WriteTxt(string filePath, string content)
+        {
+            //写入文件，如果文件存在则覆盖
+            using (var sw = new StreamWriter(filePath, false))
             {
-                
+                sw.Write(content);
             }
-            return ret;
         }
 
     }

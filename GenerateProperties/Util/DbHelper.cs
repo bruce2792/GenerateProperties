@@ -69,13 +69,10 @@ namespace GenerateProperties.Util
             }
             using (SqlConnection conn = new SqlConnection(connStr))
             {
-                conn.Open();
                 SqlCommand cmd = GetSqlCommand(conn, strSQL, CommandType.Text, parameters);
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
                 DataSet ds = new DataSet();
                 da.Fill(ds);
-                cmd.Dispose();
-                da.Dispose();
                 return ds.Tables[0];
             }
         }
@@ -153,11 +150,16 @@ namespace GenerateProperties.Util
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
-                SqlCommand cmd = GetSqlCommand(conn, strSQL, CommandType.Text, parameters);
-                cmd.CommandTimeout = 0;
-                int result = cmd.ExecuteNonQuery();
-                cmd.Dispose();
-                return result;
+                using (SqlCommand cmd = new SqlCommand(strSQL, conn))
+                {
+                    if (parameters != null)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+                    cmd.CommandTimeout = 60;
+                    int result = cmd.ExecuteNonQuery();
+                    return result;
+                }
             }
         }
 
@@ -333,9 +335,9 @@ namespace GenerateProperties.Util
         /// </summary>
         /// <param name="strSQL">待执行SQL语句</param>
         /// <returns>查询结果</returns>
-        public static List<T> ExecSqlDataReader<T>(string strSQL, string db = "master")
+        public static List<T> ExecSqlDataReader<T>(string strSQL)
         {
-            return ExecSqlDataReader<T>(strSQL, db, null);
+            return ExecSqlDataReader<T>(strSQL, null);
         }
 
         ///// <summary>
@@ -355,16 +357,16 @@ namespace GenerateProperties.Util
         /// <param name="strSQL">待执行SQL语句</param>
         /// <param name="parameters">参数数组</param>
         /// <returns>查询结果</returns>
-        public static List<T> ExecSqlDataReader<T>(string strSQL, string db, SqlParameter[] parameters)
+        public static List<T> ExecSqlDataReader<T>(string strSQL, SqlParameter[] parameters)
         {
 
-            var SqlConnectionStr = string.Empty;
-            if (db == "master")
-                SqlConnectionStr = DefaultConnString;
-            else
-                SqlConnectionStr = DefaultConnString.Replace("Initial Catalog=master", $"Initial Catalog = {db}");
+            //var SqlConnectionStr = string.Empty;
+            //if (db == "master")
+            //    SqlConnectionStr = DefaultConnString;
+            //else
+            //    SqlConnectionStr = DefaultConnString.Replace("Initial Catalog=master", $"Initial Catalog = {db}");
 
-            using (var conn = new SqlConnection(SqlConnectionStr))
+            using (var conn = new SqlConnection(DefaultConnString))
             {
                 conn.Open();
                 using (SqlCommand cmd = GetSqlCommand(conn, strSQL, CommandType.Text, parameters))
@@ -541,25 +543,15 @@ namespace GenerateProperties.Util
         {
             using (SqlConnection conn = new SqlConnection(connStr))
             {
-                conn.Open();
-
                 using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
                 {
-                    try
+                    bulkCopy.DestinationTableName = tableName;//要插入的表的表名
+                    for (int i = 0; i < dtColName.Rows.Count; i++)
                     {
-                        bulkCopy.DestinationTableName = tableName;//要插入的表的表名
-                        for (int i = 0; i < dtColName.Rows.Count; i++)
-                        {
-                            bulkCopy.ColumnMappings.Add(dtColName.Rows[i][0].ToString().Trim(), dtColName.Rows[i][1].ToString().Trim());
+                        bulkCopy.ColumnMappings.Add(dtColName.Rows[i][0].ToString().Trim(), dtColName.Rows[i][1].ToString().Trim());
 
-                        }
-
-                        bulkCopy.WriteToServer(dtExcel);
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
+                    bulkCopy.WriteToServer(dtExcel);
                 }
             }
         }
@@ -573,7 +565,7 @@ namespace GenerateProperties.Util
         /// <param name="dbconfig">目标连接字符</param>
         /// <param name="tablename">目标表</param>
         /// <param name="dt">源数据</param>
-        public static string SqlBulkCopyByDatatable(string tablename, DataTable table, string connStr, SqlConnection m_clsSqlConn)
+        public static string SqlBulkCopy(string tablename, DataTable table, SqlConnection m_clsSqlConn)
         {
             string dataBaseStr = "";
             if (tablename.Contains("."))
@@ -582,101 +574,50 @@ namespace GenerateProperties.Util
                 tablename = tablename.Substring(tablename.LastIndexOf(".") + 1);
             }
 
-            try
+            string result = "";
+            using (m_clsSqlConn)
             {
-                string result = "";
-                SqlBulkCopy sqlBulkCopy = null;
-                if (m_clsSqlConn != null)
+                SqlBulkCopy sqlBulkCopy = new SqlBulkCopy(m_clsSqlConn);
+                using (sqlBulkCopy)
                 {
-                    sqlBulkCopy = new SqlBulkCopy(m_clsSqlConn);
-                    if (m_clsSqlConn.State == ConnectionState.Closed)
+                    sqlBulkCopy.DestinationTableName = dataBaseStr + ((tablename.IndexOf("[") > -1 && tablename.IndexOf("]") > -1) ? tablename : "[" + tablename + "]");
+                    sqlBulkCopy.BulkCopyTimeout = 500;
+                    //sqlBulkCopy.BatchSize = 800;
+
+                    for (int i = 0; i < table.Columns.Count; i++)
                     {
-                        m_clsSqlConn.Open();
+                        sqlBulkCopy.ColumnMappings.Add(table.Columns[i].ColumnName, table.Columns[i].ColumnName);
                     }
-                }
-                else
-                {
-                    sqlBulkCopy = new SqlBulkCopy(connStr);
-                }
 
-
-
-                sqlBulkCopy.DestinationTableName = dataBaseStr + ((tablename.IndexOf("[") > -1 && tablename.IndexOf("]") > -1) ? tablename : "[" + tablename + "]");
-                sqlBulkCopy.BulkCopyTimeout = 500;
-                //sqlBulkCopy.BatchSize = 800;
-
-                for (int i = 0; i < table.Columns.Count; i++)
-                {
-                    sqlBulkCopy.ColumnMappings.Add(table.Columns[i].ColumnName, table.Columns[i].ColumnName);
-                }
-
-                if (table.Rows.Count > 0)
-                {
-                    sqlBulkCopy.WriteToServer(table);
-                }
-                else
-                {
-                    result = "表为空";
-                }
-
-                sqlBulkCopy.Close();
-                return result;
-            }
-            catch (Exception e)
-            {
-                return e.Message;
-            }
-            finally
-            {
-                try
-                {
-                    if (m_clsSqlConn != null)
+                    if (table.Rows.Count > 0)
                     {
-
-                        try
-                        {
-                            if (m_clsSqlConn.State == ConnectionState.Open)
-                            {
-                                m_clsSqlConn.Close();
-                            }
-                        }
-                        catch (Exception)
-                        {
-
-                        }
+                        sqlBulkCopy.WriteToServer(table);
                     }
-                }
-                catch (Exception)
-                {
-
+                    else
+                    {
+                        result = "表为空";
+                    }
+                    return result;
                 }
             }
         }
 
         public static string SqlBulkCopyByDatatable(string tablename, DataTable table, SqlConnection m_clsSqlConn)
         {
-            return SqlBulkCopyByDatatable(tablename, table, string.Empty, m_clsSqlConn);
-
-        }
-        public static string SqlBulkCopyByDatatable(string tablename, DataTable table, string connStr)
-        {
-            return SqlBulkCopyByDatatable(tablename, table, connStr, null);
+            return SqlBulkCopy(tablename, table, m_clsSqlConn);
         }
 
-        public static string SqlBulkCopyByDatatable(string tablename, DataTable table)
-        {
-            return SqlBulkCopyByDatatable(tablename, table, DefaultConnString, null);
-        }
+
 
         public static string CreateTempTable(string tablename, DataTable table, string connStr)
         {
             return CreateTempTable(tablename, table, new SqlConnection(connStr));
         }
-        public static string CreateTempTable(string tablename, DataTable table, SqlConnection connStr)
+        public static string CreateTempTable(string tablename, DataTable table, SqlConnection con)
         {
-            try
-            {
 
+            using (con)
+            {
                 string sqlstr = "CREATE TABLE [" + tablename + "](";
                 for (int i = 0; i < table.Columns.Count; i++)
                 {
@@ -711,19 +652,13 @@ namespace GenerateProperties.Util
                 }
                 sqlstr = sqlstr.Substring(0, sqlstr.Length - 1) + ")";
 
-                if (connStr.State != ConnectionState.Open)
+
+                using (SqlCommand cmd = GetSqlCommand(con, sqlstr, CommandType.Text, null))
                 {
-                    connStr.Open();
+                    int result = cmd.ExecuteNonQuery();
+                    return "";
                 }
 
-                SqlCommand cmd = GetSqlCommand(connStr, sqlstr, CommandType.Text, null);
-                int result = cmd.ExecuteNonQuery();
-                cmd.Dispose();
-                return "";
-            }
-            catch (Exception e)
-            {
-                return e.ToString();
             }
         }
 
@@ -737,20 +672,13 @@ namespace GenerateProperties.Util
         }
         public static bool SqlBuckCopy(string TableName, DataTable dt, SqlConnection sqlConn)
         {
-            try
+            using (sqlConn)
             {
 
-
-                if (sqlConn.State != ConnectionState.Open)
-                {
-                    sqlConn.Open();
-                }
 
 
                 SqlBulkCopy bulkCopy = new SqlBulkCopy(sqlConn);
                 bulkCopy.DestinationTableName = TableName;
-
-
 
                 if (dt != null && dt.Rows.Count != 0)
                 {
@@ -759,22 +687,8 @@ namespace GenerateProperties.Util
 
                     bulkCopy.WriteToServer(dt);
                 }
-
-
-                sqlConn.Close();
-                sqlConn.Dispose();
-
+                return true;
             }
-            catch (Exception ex)
-            {
-                logger.Error(ex, $"SqlBuckCopy异常信息,Code:{dt.Rows[0]["Code"]} 数量 {dt.Rows.Count} ");
-                return false;
-            }
-            finally
-            {
-
-            }
-            return true;
         }
 
         #endregion

@@ -45,22 +45,29 @@ namespace GenerateProperties
             this.label4 = new System.Windows.Forms.Label();
             this.btnJsonToEntity = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lstFilterTable = new System.Windows.Forms.ListBox();
+            this.btnEditSqlFieldAnnotation = new System.Windows.Forms.Button();
+            this.cboChooseDatabase = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.管理数据库ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.选择要连接的数据库ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label6 = new System.Windows.Forms.Label();
-            this.c = new System.Windows.Forms.ComboBox();
+            this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tooltipComponent1 = new AntdUI.TooltipComponent();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.table1 = new AntdUI.Table();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(38, 51);
+            this.label1.Location = new System.Drawing.Point(16, 94);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 18);
@@ -71,7 +78,7 @@ namespace GenerateProperties
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(132, 46);
+            this.comboBox1.Location = new System.Drawing.Point(110, 89);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(248, 26);
@@ -80,18 +87,18 @@ namespace GenerateProperties
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(157, 430);
+            this.textBox1.Location = new System.Drawing.Point(1357, 177);
             this.textBox1.Margin = new System.Windows.Forms.Padding(4);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(1195, 669);
+            this.textBox1.Size = new System.Drawing.Size(202, 290);
             this.textBox1.TabIndex = 3;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(38, 433);
+            this.label2.Location = new System.Drawing.Point(1354, 137);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(98, 18);
@@ -102,7 +109,7 @@ namespace GenerateProperties
             // 
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(580, 46);
+            this.comboBox2.Location = new System.Drawing.Point(418, 91);
             this.comboBox2.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(270, 26);
@@ -112,7 +119,7 @@ namespace GenerateProperties
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(528, 51);
+            this.label3.Location = new System.Drawing.Point(366, 94);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(44, 18);
@@ -121,10 +128,10 @@ namespace GenerateProperties
             // 
             // btnReload
             // 
-            this.btnReload.Location = new System.Drawing.Point(392, 34);
+            this.btnReload.Location = new System.Drawing.Point(538, 34);
             this.btnReload.Margin = new System.Windows.Forms.Padding(4);
             this.btnReload.Name = "btnReload";
-            this.btnReload.Size = new System.Drawing.Size(106, 52);
+            this.btnReload.Size = new System.Drawing.Size(106, 30);
             this.btnReload.TabIndex = 0;
             this.btnReload.Text = "刷新";
             this.btnReload.UseVisualStyleBackColor = true;
@@ -132,7 +139,7 @@ namespace GenerateProperties
             // 
             // btGenerateSingleDB
             // 
-            this.btGenerateSingleDB.Location = new System.Drawing.Point(594, 112);
+            this.btGenerateSingleDB.Location = new System.Drawing.Point(933, 24);
             this.btGenerateSingleDB.Margin = new System.Windows.Forms.Padding(4);
             this.btGenerateSingleDB.Name = "btGenerateSingleDB";
             this.btGenerateSingleDB.Size = new System.Drawing.Size(186, 52);
@@ -143,7 +150,7 @@ namespace GenerateProperties
             // 
             // btGenerateAllDB
             // 
-            this.btGenerateAllDB.Location = new System.Drawing.Point(788, 112);
+            this.btGenerateAllDB.Location = new System.Drawing.Point(1139, 24);
             this.btGenerateAllDB.Margin = new System.Windows.Forms.Padding(4);
             this.btGenerateAllDB.Name = "btGenerateAllDB";
             this.btGenerateAllDB.Size = new System.Drawing.Size(182, 52);
@@ -159,7 +166,7 @@ namespace GenerateProperties
             this.groupBox1.Controls.Add(this.txtJson);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.btnJsonToEntity);
-            this.groupBox1.Location = new System.Drawing.Point(23, 109);
+            this.groupBox1.Location = new System.Drawing.Point(4, 15);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
@@ -225,6 +232,10 @@ namespace GenerateProperties
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.lstFilterTable);
+            this.groupBox2.Controls.Add(this.btnEditSqlFieldAnnotation);
+            this.groupBox2.Controls.Add(this.cboChooseDatabase);
+            this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.textBox2);
             this.groupBox2.Controls.Add(this.btnReload);
             this.groupBox2.Controls.Add(this.btGenerateAllDB);
@@ -233,32 +244,61 @@ namespace GenerateProperties
             this.groupBox2.Controls.Add(this.comboBox1);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.comboBox2);
-            this.groupBox2.Location = new System.Drawing.Point(23, 234);
+            this.groupBox2.Location = new System.Drawing.Point(4, 123);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox2.Size = new System.Drawing.Size(1329, 188);
+            this.groupBox2.Size = new System.Drawing.Size(1329, 350);
             this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "根据数据库表生成实体";
             this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
+            // lstFilterTable
+            // 
+            this.lstFilterTable.FormattingEnabled = true;
+            this.lstFilterTable.ItemHeight = 18;
+            this.lstFilterTable.Location = new System.Drawing.Point(695, 124);
+            this.lstFilterTable.Name = "lstFilterTable";
+            this.lstFilterTable.Size = new System.Drawing.Size(254, 220);
+            this.lstFilterTable.TabIndex = 15;
+            this.lstFilterTable.SelectedIndexChanged += new System.EventHandler(this.lstFilterTable_SelectedIndexChanged);
+            // 
+            // btnEditSqlFieldAnnotation
+            // 
+            this.btnEditSqlFieldAnnotation.Location = new System.Drawing.Point(816, 24);
+            this.btnEditSqlFieldAnnotation.Name = "btnEditSqlFieldAnnotation";
+            this.btnEditSqlFieldAnnotation.Size = new System.Drawing.Size(110, 52);
+            this.btnEditSqlFieldAnnotation.TabIndex = 14;
+            this.btnEditSqlFieldAnnotation.Text = "编辑注释";
+            this.btnEditSqlFieldAnnotation.UseVisualStyleBackColor = true;
+            this.btnEditSqlFieldAnnotation.Click += new System.EventHandler(this.btnEditSqlFieldAnnotation_Click);
+            // 
+            // cboChooseDatabase
+            // 
+            this.cboChooseDatabase.FormattingEnabled = true;
+            this.cboChooseDatabase.Location = new System.Drawing.Point(235, 38);
+            this.cboChooseDatabase.Name = "cboChooseDatabase";
+            this.cboChooseDatabase.Size = new System.Drawing.Size(280, 26);
+            this.cboChooseDatabase.TabIndex = 13;
+            this.cboChooseDatabase.SelectedIndexChanged += new System.EventHandler(this.cboChooseDatabase_SelectedIndexChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(15, 41);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(224, 18);
+            this.label6.TabIndex = 12;
+            this.label6.Text = "选择要使用的数据库连接：";
+            // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(878, 40);
+            this.textBox2.Location = new System.Drawing.Point(695, 89);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(254, 28);
             this.textBox2.TabIndex = 8;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
-            // 
-            // toolStrip1
-            // 
-            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.toolStrip1.Location = new System.Drawing.Point(0, 32);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1365, 25);
-            this.toolStrip1.TabIndex = 10;
-            this.toolStrip1.Text = "toolStrip1";
             // 
             // menuStrip1
             // 
@@ -268,59 +308,77 @@ namespace GenerateProperties
             this.toolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1365, 32);
+            this.menuStrip1.Size = new System.Drawing.Size(1839, 32);
             this.menuStrip1.TabIndex = 11;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.选择要连接的数据库ToolStripMenuItem});
+            this.管理数据库ToolStripMenuItem,
+            this.选择要连接的数据库ToolStripMenuItem,
+            this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(62, 28);
             this.toolStripMenuItem1.Text = "设置";
             // 
+            // 管理数据库ToolStripMenuItem
+            // 
+            this.管理数据库ToolStripMenuItem.Name = "管理数据库ToolStripMenuItem";
+            this.管理数据库ToolStripMenuItem.Size = new System.Drawing.Size(416, 34);
+            this.管理数据库ToolStripMenuItem.Text = "管理数据库";
+            this.管理数据库ToolStripMenuItem.Click += new System.EventHandler(this.管理数据库ToolStripMenuItem_Click);
+            // 
             // 选择要连接的数据库ToolStripMenuItem
             // 
             this.选择要连接的数据库ToolStripMenuItem.Name = "选择要连接的数据库ToolStripMenuItem";
-            this.选择要连接的数据库ToolStripMenuItem.Size = new System.Drawing.Size(272, 34);
+            this.选择要连接的数据库ToolStripMenuItem.Size = new System.Drawing.Size(416, 34);
             this.选择要连接的数据库ToolStripMenuItem.Text = "选择要连接的数据库";
             // 
-            // label6
+            // 测试在全局捕捉主线程和非主线程异常ToolStripMenuItem
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(32, 61);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(188, 18);
-            this.label6.TabIndex = 12;
-            this.label6.Text = "选择要连接的数据库：";
+            this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem.Name = "测试在全局捕捉主线程和非主线程异常ToolStripMenuItem";
+            this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem.Size = new System.Drawing.Size(416, 34);
+            this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem.Text = "测试在全局捕捉主线程和非主线程异常";
+            this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem.Click += new System.EventHandler(this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem_Click);
             // 
-            // c
+            // panel1
             // 
-            this.c.FormattingEnabled = true;
-            this.c.Location = new System.Drawing.Point(227, 61);
-            this.c.Name = "c";
-            this.c.Size = new System.Drawing.Size(280, 26);
-            this.c.TabIndex = 13;
+            this.panel1.AutoScroll = true;
+            this.panel1.Controls.Add(this.table1);
+            this.panel1.Controls.Add(this.groupBox1);
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.textBox1);
+            this.panel1.Controls.Add(this.groupBox2);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 32);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1839, 1351);
+            this.panel1.TabIndex = 12;
+            // 
+            // table1
+            // 
+            this.table1.Gap = 12;
+            this.table1.Location = new System.Drawing.Point(4, 473);
+            this.table1.Name = "table1";
+            this.table1.Size = new System.Drawing.Size(1555, 853);
+            this.table1.TabIndex = 10;
+            this.table1.Text = "table1";
+            this.table1.CellEndEdit += new AntdUI.Table.EndEditEventHandler(this.table1_CellEndEdit);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1365, 1207);
-            this.Controls.Add(this.c);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.toolStrip1);
+            this.ClientSize = new System.Drawing.Size(1839, 1383);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.label2);
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "生成属性";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
@@ -329,6 +387,8 @@ namespace GenerateProperties
             this.groupBox2.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -352,12 +412,18 @@ namespace GenerateProperties
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem 选择要连接的数据库ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 管理数据库ToolStripMenuItem;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.ComboBox c;
+        private System.Windows.Forms.ComboBox cboChooseDatabase;
+        private System.Windows.Forms.ToolStripMenuItem 选择要连接的数据库ToolStripMenuItem;
+        private AntdUI.TooltipComponent tooltipComponent1;
+        private System.Windows.Forms.ToolStripMenuItem 测试在全局捕捉主线程和非主线程异常ToolStripMenuItem;
+        private System.Windows.Forms.Button btnEditSqlFieldAnnotation;
+        private System.Windows.Forms.ListBox lstFilterTable;
+        private System.Windows.Forms.Panel panel1;
+        private AntdUI.Table table1;
     }
 }
 
