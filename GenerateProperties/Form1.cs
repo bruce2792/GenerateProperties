@@ -135,6 +135,8 @@ namespace GenerateProperties
 
             this.table1.EditMode = TEditMode.Click;//单击进入修改模式
             this.table1.Binding(tableFields);//table绑定数据源
+
+
         }
 
         /// <summary>
@@ -161,7 +163,7 @@ namespace GenerateProperties
             var tableList = GetTableList(db);
 
             //切换数据库 设置连接字符串
-           
+
 
             SetCombox(tableList.OrderBy(a => a).ToList(), this.comboBox2);
         }
@@ -924,16 +926,52 @@ ORDER BY SCOL.colid ASC";
         {
             //table
             string table = this.comboBox2.Text;
-            var updateSqlFieldSql = $@"EXEC sys.sp_updateextendedproperty
-    @name = N'MS_Description',  -- 固定为 MS_Description，表示注释属性
-    @value = N'${e.Value}',   -- 此处替换为你需要设置的新注释文本
-    @level0type = N'SCHEMA',   -- 一级对象类型为架构
-    @level0name = N'dbo',      -- 一级对象名，通常是架构名，如 dbo
-    @level1type = N'TABLE',    -- 二级对象类型为表
-    @level1name = N'{table}', -- 此处替换为你的表名
-    @level2type = N'COLUMN',   -- 三级对象类型为列
-    @level2name = N'{tableFields[e.RowIndex - 1].FieldName}'; -- 此处替换为你的字段名";
+            //        var updateSqlFieldSql = $@"EXEC sys.sp_updateextendedproperty
+            //@name = N'MS_Description',  -- 固定为 MS_Description，表示注释属性
+            //@value = N'${e.Value}',   -- 此处替换为你需要设置的新注释文本
+            //@level0type = N'SCHEMA',   -- 一级对象类型为架构
+            //@level0name = N'dbo',      -- 一级对象名，通常是架构名，如 dbo
+            //@level1type = N'TABLE',    -- 二级对象类型为表
+            //@level1name = N'{table}', -- 此处替换为你的表名
+            //@level2type = N'COLUMN',   -- 三级对象类型为列
+            //@level2name = N'{tableFields[e.RowIndex - 1].FieldName}'; -- 此处替换为你的字段名";
+
+            var updateSqlFieldSql = $@"
+-- 如果不存在则添加，存在则更新
+IF EXISTS (
+    SELECT 1 FROM fn_listextendedproperty ('MS_Description', 
+        'SCHEMA', N'dbo', 
+        'TABLE', N'{table}', 
+        'COLUMN', N'{tableFields[e.RowIndex - 1].FieldName}')
+)
+BEGIN
+    -- 更新已存在的属性
+    EXEC sys.sp_updateextendedproperty 
+        @name = N'MS_Description',
+        @value = N'{e.Value}',
+        @level0type = N'SCHEMA', @level0name = N'dbo',
+        @level1type = N'TABLE',  @level1name = N'{table}',
+        @level2type = N'COLUMN', @level2name = N'{tableFields[e.RowIndex - 1].FieldName}';
+END
+ELSE
+BEGIN
+    -- 添加新属性
+    EXEC sys.sp_addextendedproperty 
+        @name = N'MS_Description',
+        @value = N'{e.Value}',
+        @level0type = N'SCHEMA', @level0name = N'dbo',
+        @level1type = N'TABLE',  @level1name = N'{table}',
+        @level2type = N'COLUMN', @level2name = N'{tableFields[e.RowIndex - 1].FieldName}';
+END
+";
+
             DbHelper.ExecSqlNonQuerry(updateSqlFieldSql);
+            return true;
+        }
+
+        private bool table1_CellEndValueEdit(object sender, TableEndValueEditEventArgs e)
+        {
+            MessageBox.Show("");
             return true;
         }
     }

@@ -67,10 +67,9 @@ namespace GenerateProperties
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 94);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(11, 63);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(80, 18);
+            this.label1.Size = new System.Drawing.Size(53, 12);
             this.label1.TabIndex = 1;
             this.label1.Text = "数据库：";
             // 
@@ -78,30 +77,27 @@ namespace GenerateProperties
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(110, 89);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.comboBox1.Location = new System.Drawing.Point(73, 59);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(248, 26);
+            this.comboBox1.Size = new System.Drawing.Size(167, 20);
             this.comboBox1.TabIndex = 2;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(1357, 177);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox1.Location = new System.Drawing.Point(905, 118);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(202, 290);
+            this.textBox1.Size = new System.Drawing.Size(136, 195);
             this.textBox1.TabIndex = 3;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1354, 137);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Location = new System.Drawing.Point(903, 91);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(98, 18);
+            this.label2.Size = new System.Drawing.Size(65, 12);
             this.label2.TabIndex = 4;
             this.label2.Text = "实体属性：";
             // 
@@ -109,29 +105,26 @@ namespace GenerateProperties
             // 
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(418, 91);
-            this.comboBox2.Margin = new System.Windows.Forms.Padding(4);
+            this.comboBox2.Location = new System.Drawing.Point(279, 61);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(270, 26);
+            this.comboBox2.Size = new System.Drawing.Size(181, 20);
             this.comboBox2.TabIndex = 5;
             this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(366, 94);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Location = new System.Drawing.Point(244, 63);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(44, 18);
+            this.label3.Size = new System.Drawing.Size(29, 12);
             this.label3.TabIndex = 6;
             this.label3.Text = "表：";
             // 
             // btnReload
             // 
-            this.btnReload.Location = new System.Drawing.Point(538, 34);
-            this.btnReload.Margin = new System.Windows.Forms.Padding(4);
+            this.btnReload.Location = new System.Drawing.Point(359, 23);
             this.btnReload.Name = "btnReload";
-            this.btnReload.Size = new System.Drawing.Size(106, 30);
+            this.btnReload.Size = new System.Drawing.Size(71, 20);
             this.btnReload.TabIndex = 0;
             this.btnReload.Text = "刷新";
             this.btnReload.UseVisualStyleBackColor = true;
@@ -139,10 +132,9 @@ namespace GenerateProperties
             // 
             // btGenerateSingleDB
             // 
-            this.btGenerateSingleDB.Location = new System.Drawing.Point(933, 24);
-            this.btGenerateSingleDB.Margin = new System.Windows.Forms.Padding(4);
+            this.btGenerateSingleDB.Location = new System.Drawing.Point(622, 16);
             this.btGenerateSingleDB.Name = "btGenerateSingleDB";
-            this.btGenerateSingleDB.Size = new System.Drawing.Size(186, 52);
+            this.btGenerateSingleDB.Size = new System.Drawing.Size(124, 35);
             this.btGenerateSingleDB.TabIndex = 7;
             this.btGenerateSingleDB.Text = "生成选中库的全部表";
             this.btGenerateSingleDB.UseVisualStyleBackColor = true;
@@ -150,10 +142,9 @@ namespace GenerateProperties
             // 
             // btGenerateAllDB
             // 
-            this.btGenerateAllDB.Location = new System.Drawing.Point(1139, 24);
-            this.btGenerateAllDB.Margin = new System.Windows.Forms.Padding(4);
+            this.btGenerateAllDB.Location = new System.Drawing.Point(759, 16);
             this.btGenerateAllDB.Name = "btGenerateAllDB";
-            this.btGenerateAllDB.Size = new System.Drawing.Size(182, 52);
+            this.btGenerateAllDB.Size = new System.Drawing.Size(121, 35);
             this.btGenerateAllDB.TabIndex = 7;
             this.btGenerateAllDB.Text = "生成全部库的全部表";
             this.btGenerateAllDB.UseVisualStyleBackColor = true;
@@ -166,11 +157,9 @@ namespace GenerateProperties
             this.groupBox1.Controls.Add(this.txtJson);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.btnJsonToEntity);
-            this.groupBox1.Location = new System.Drawing.Point(4, 15);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox1.Location = new System.Drawing.Point(3, 10);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(1329, 100);
+            this.groupBox1.Size = new System.Drawing.Size(886, 67);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "根据JSON内容生成实体属性";
@@ -179,10 +168,9 @@ namespace GenerateProperties
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(738, 0);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Location = new System.Drawing.Point(492, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(188, 18);
+            this.label5.Size = new System.Drawing.Size(125, 12);
             this.label5.TabIndex = 9;
             this.label5.Text = "Json转C#实体网站工具";
             this.label5.Click += new System.EventHandler(this.label5_Click);
@@ -190,10 +178,9 @@ namespace GenerateProperties
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(934, 0);
-            this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.linkLabel1.Location = new System.Drawing.Point(623, 0);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(395, 18);
+            this.linkLabel1.Size = new System.Drawing.Size(263, 12);
             this.linkLabel1.TabIndex = 8;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "https://www.bejson.com/convert/json2csharp/";
@@ -201,30 +188,27 @@ namespace GenerateProperties
             // 
             // txtJson
             // 
-            this.txtJson.Location = new System.Drawing.Point(132, 39);
-            this.txtJson.Margin = new System.Windows.Forms.Padding(4);
+            this.txtJson.Location = new System.Drawing.Point(88, 26);
             this.txtJson.Multiline = true;
             this.txtJson.Name = "txtJson";
-            this.txtJson.Size = new System.Drawing.Size(718, 50);
+            this.txtJson.Size = new System.Drawing.Size(480, 35);
             this.txtJson.TabIndex = 2;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(20, 44);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Location = new System.Drawing.Point(13, 29);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(98, 18);
+            this.label4.Size = new System.Drawing.Size(65, 12);
             this.label4.TabIndex = 1;
             this.label4.Text = "JSON内容：";
             this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // btnJsonToEntity
             // 
-            this.btnJsonToEntity.Location = new System.Drawing.Point(866, 39);
-            this.btnJsonToEntity.Margin = new System.Windows.Forms.Padding(4);
+            this.btnJsonToEntity.Location = new System.Drawing.Point(577, 26);
             this.btnJsonToEntity.Name = "btnJsonToEntity";
-            this.btnJsonToEntity.Size = new System.Drawing.Size(186, 52);
+            this.btnJsonToEntity.Size = new System.Drawing.Size(124, 35);
             this.btnJsonToEntity.TabIndex = 7;
             this.btnJsonToEntity.Text = "生成实体";
             this.btnJsonToEntity.UseVisualStyleBackColor = true;
@@ -244,11 +228,9 @@ namespace GenerateProperties
             this.groupBox2.Controls.Add(this.comboBox1);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.comboBox2);
-            this.groupBox2.Location = new System.Drawing.Point(4, 123);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox2.Location = new System.Drawing.Point(3, 82);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox2.Size = new System.Drawing.Size(1329, 350);
+            this.groupBox2.Size = new System.Drawing.Size(886, 233);
             this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "根据数据库表生成实体";
@@ -257,18 +239,20 @@ namespace GenerateProperties
             // lstFilterTable
             // 
             this.lstFilterTable.FormattingEnabled = true;
-            this.lstFilterTable.ItemHeight = 18;
-            this.lstFilterTable.Location = new System.Drawing.Point(695, 124);
+            this.lstFilterTable.ItemHeight = 12;
+            this.lstFilterTable.Location = new System.Drawing.Point(463, 83);
+            this.lstFilterTable.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.lstFilterTable.Name = "lstFilterTable";
-            this.lstFilterTable.Size = new System.Drawing.Size(254, 220);
+            this.lstFilterTable.Size = new System.Drawing.Size(171, 148);
             this.lstFilterTable.TabIndex = 15;
             this.lstFilterTable.SelectedIndexChanged += new System.EventHandler(this.lstFilterTable_SelectedIndexChanged);
             // 
             // btnEditSqlFieldAnnotation
             // 
-            this.btnEditSqlFieldAnnotation.Location = new System.Drawing.Point(816, 24);
+            this.btnEditSqlFieldAnnotation.Location = new System.Drawing.Point(544, 16);
+            this.btnEditSqlFieldAnnotation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnEditSqlFieldAnnotation.Name = "btnEditSqlFieldAnnotation";
-            this.btnEditSqlFieldAnnotation.Size = new System.Drawing.Size(110, 52);
+            this.btnEditSqlFieldAnnotation.Size = new System.Drawing.Size(73, 35);
             this.btnEditSqlFieldAnnotation.TabIndex = 14;
             this.btnEditSqlFieldAnnotation.Text = "编辑注释";
             this.btnEditSqlFieldAnnotation.UseVisualStyleBackColor = true;
@@ -277,38 +261,41 @@ namespace GenerateProperties
             // cboChooseDatabase
             // 
             this.cboChooseDatabase.FormattingEnabled = true;
-            this.cboChooseDatabase.Location = new System.Drawing.Point(235, 38);
+            this.cboChooseDatabase.Location = new System.Drawing.Point(157, 25);
+            this.cboChooseDatabase.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboChooseDatabase.Name = "cboChooseDatabase";
-            this.cboChooseDatabase.Size = new System.Drawing.Size(280, 26);
+            this.cboChooseDatabase.Size = new System.Drawing.Size(188, 20);
             this.cboChooseDatabase.TabIndex = 13;
             this.cboChooseDatabase.SelectedIndexChanged += new System.EventHandler(this.cboChooseDatabase_SelectedIndexChanged);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(15, 41);
+            this.label6.Location = new System.Drawing.Point(10, 27);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(224, 18);
+            this.label6.Size = new System.Drawing.Size(149, 12);
             this.label6.TabIndex = 12;
             this.label6.Text = "选择要使用的数据库连接：";
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(695, 89);
+            this.textBox2.Location = new System.Drawing.Point(463, 59);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(254, 28);
+            this.textBox2.Size = new System.Drawing.Size(171, 21);
             this.textBox2.TabIndex = 8;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // menuStrip1
             // 
-            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1839, 32);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
+            this.menuStrip1.Size = new System.Drawing.Size(1226, 24);
             this.menuStrip1.TabIndex = 11;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -319,26 +306,26 @@ namespace GenerateProperties
             this.选择要连接的数据库ToolStripMenuItem,
             this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(62, 28);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(44, 22);
             this.toolStripMenuItem1.Text = "设置";
             // 
             // 管理数据库ToolStripMenuItem
             // 
             this.管理数据库ToolStripMenuItem.Name = "管理数据库ToolStripMenuItem";
-            this.管理数据库ToolStripMenuItem.Size = new System.Drawing.Size(416, 34);
+            this.管理数据库ToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.管理数据库ToolStripMenuItem.Text = "管理数据库";
             this.管理数据库ToolStripMenuItem.Click += new System.EventHandler(this.管理数据库ToolStripMenuItem_Click);
             // 
             // 选择要连接的数据库ToolStripMenuItem
             // 
             this.选择要连接的数据库ToolStripMenuItem.Name = "选择要连接的数据库ToolStripMenuItem";
-            this.选择要连接的数据库ToolStripMenuItem.Size = new System.Drawing.Size(416, 34);
+            this.选择要连接的数据库ToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.选择要连接的数据库ToolStripMenuItem.Text = "选择要连接的数据库";
             // 
             // 测试在全局捕捉主线程和非主线程异常ToolStripMenuItem
             // 
             this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem.Name = "测试在全局捕捉主线程和非主线程异常ToolStripMenuItem";
-            this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem.Size = new System.Drawing.Size(416, 34);
+            this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem.Text = "测试在全局捕捉主线程和非主线程异常";
             this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem.Click += new System.EventHandler(this.测试在全局捕捉主线程和非主线程异常ToolStripMenuItem_Click);
             // 
@@ -351,30 +338,32 @@ namespace GenerateProperties
             this.panel1.Controls.Add(this.textBox1);
             this.panel1.Controls.Add(this.groupBox2);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 32);
+            this.panel1.Location = new System.Drawing.Point(0, 24);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1839, 1351);
+            this.panel1.Size = new System.Drawing.Size(1226, 898);
             this.panel1.TabIndex = 12;
             // 
             // table1
             // 
             this.table1.Gap = 12;
-            this.table1.Location = new System.Drawing.Point(4, 473);
+            this.table1.Location = new System.Drawing.Point(3, 315);
+            this.table1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.table1.Name = "table1";
-            this.table1.Size = new System.Drawing.Size(1555, 853);
+            this.table1.Size = new System.Drawing.Size(1037, 569);
             this.table1.TabIndex = 10;
             this.table1.Text = "table1";
             this.table1.CellEndEdit += new AntdUI.Table.EndEditEventHandler(this.table1_CellEndEdit);
+            this.table1.CellEndValueEdit += new AntdUI.Table.EndValueEditEventHandler(this.table1_CellEndValueEdit);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1839, 1383);
+            this.ClientSize = new System.Drawing.Size(1226, 922);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "生成属性";
